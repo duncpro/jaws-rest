@@ -1,4 +1,4 @@
 node_modules
 .cdk.staging
 cdk.out
-./latest-deployment-cfn-outputs.json
+latest-deployment-cfn-outputs.json
