@@ -1,0 +1,25 @@
+val restRequestHandlerPackage: Configuration by configurations.creating {}
+
+dependencies {
+    restRequestHandlerPackage(project(":request-handler-lambda", "lambdaPackage"))
+}
+
+val deploy by tasks.registering {
+    dependsOn(restRequestHandlerPackage)
+
+    doLast {
+        exec {
+            commandLine("cdk", "deploy", "--outputs-file", "latest-deployment-cfn-outputs.json",
+                "--require-approval", "never")
+            environment("PATH_TO_REQUEST_HANDLER_PACKAGE",
+                restRequestHandlerPackage.singleFile.absolutePath)
+        }
+    }
+
+    outputs.file("./latest-deployment-cfn-outputs.json");
+    outputs.upToDateWhen { false } // Defer diffing to AWS CDK CLI
+}
+
+// Expose the deployed REST API URL to the integration testing module.
+val cfnOutputs by configurations.registering {}
+artifacts.add(cfnOutputs.name, deploy)

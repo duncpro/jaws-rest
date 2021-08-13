@@ -1,0 +1,6 @@
+build/
+.idea
+.gradle
+
+# Project exclude paths
+/integration-tests/node_modules/
