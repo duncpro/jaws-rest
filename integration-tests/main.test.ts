@@ -40,16 +40,16 @@ describe('integration tests', () => {
             expect(echoResponse.requestMethod).toEqual('POST');
         });
 
-        test('Proxy function has access to body', async () => {
+        test('Proxy function has access to request body', async () => {
             expect(echoResponse.requestBody).toEqual('hello world');
         });
 
-        test('Proxy function has access to path', async () => {
+        test('Proxy function has access to request path', async () => {
             // Notice that AWS includes a leading slash
             expect(echoResponse.requestPath).toEqual('/hello/world');
         });
 
-        test('Proxy function has access to query params', async () => {
+        test('Proxy function has access to request query params', async () => {
             expect(echoResponse.requestQueryParams.id).toEqual('123');
         })
     });
