@@ -7,9 +7,13 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    maven("https://jitpack.io")
 }
 
 dependencies {
+    implementation("com.duncpro:jroute:31cdd9dab1")
+    implementation("com.duncpro:rex:5c5ae534ef")
+
     // Logging
     implementation("org.slf4j:slf4j-api:1.7.31")
     runtimeOnly("com.amazonaws:aws-lambda-java-log4j2:1.2.0")

@@ -1,18 +1,15 @@
-package com.duncpro.jaws.rest;
+package com.duncpro.jaws;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Queue;
-import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 /**
  * Represents a single invocation of an AWS Lambda function.
@@ -32,9 +29,9 @@ public class AWSLambdaRuntime {
      * this method to cleanup database connections and close HTTP clients.
      *
      * The provided runnable is executed immediately after
-     * {@link LNTLambdaRequestHandler#handleRequest(Object, Context, AWSLambdaRuntime)} returns normally or exceptionally.
+     * {@link LNTRequestHandler#handleRequest(Object, Context, AWSLambdaRuntime)} returns normally or exceptionally.
      * Shutdown hooks are not executed if the Lambda function times out before
-     * {@link LNTLambdaRequestHandler#handleRequest(Object, Context, AWSLambdaRuntime)} finishes executing.
+     * {@link LNTRequestHandler#handleRequest(Object, Context, AWSLambdaRuntime)} finishes executing.
      */
     public void addShutdownHook(Runnable run) {
         shutdownHooks.add(run);

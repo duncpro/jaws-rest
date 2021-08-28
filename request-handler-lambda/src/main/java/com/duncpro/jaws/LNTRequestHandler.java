@@ -3,11 +3,7 @@ package com.duncpro.jaws;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 
-/**
- * "Leave No Trace" request handler which provides {@link Runtime#addShutdownHook(Thread)}-like abilities
- * for AWS Lambda functions.
- */
-public abstract class LNTLambdaRequestHandler<I, O> implements RequestHandler<I, O> {
+public abstract class LNTRequestHandler<I, O> implements RequestHandler<I, O> {
     @Override
     public final O handleRequest(I input, Context context) {
         final var runtime = new AWSLambdaRuntime(context);

@@ -1,4 +1,4 @@
-package com.duncpro.jaws.rest;
+package com.duncpro.jaws;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.duncpro.jaws.AWSLambdaIntegrationModule;

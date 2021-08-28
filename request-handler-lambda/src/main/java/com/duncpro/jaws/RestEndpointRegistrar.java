@@ -1,18 +1,26 @@
 package com.duncpro.jaws;
 
-import com.google.inject.Scopes;
+import com.duncpro.jroute.router.Router;
+import com.duncpro.rex.JavaMethodRequestHandler;
+import com.duncpro.rex.RequestHandlerUnexpectedErrorPolicy;
+import com.duncpro.rex.Rex;
 import com.google.inject.spi.ProvisionListener;
 
-public class RestEndpointDiscovery implements ProvisionListener {
+public class RestEndpointRegistrar implements ProvisionListener {
+    private final Router<JavaMethodRequestHandler> router;
+
+    RestEndpointRegistrar(Router<JavaMethodRequestHandler> router) {
+        this.router = router;
+    }
+
     @Override
     public <T> void onProvision(ProvisionInvocation<T> provision) {
-        final var isRestApi = provision.provision().getClass().isAnnotationPresent(RestApi.class);
-        final var isSingleton = Scopes.isSingleton(provision.getBinding());
+        final var type = provision.getBinding().getKey().getTypeLiteral().getRawType();
+        final var isRestApi = type.isAnnotationPresent(RestApi.class);
 
         if (isRestApi) {
-            if (!isSingleton) {
-                throw new RuntimeException("Classes annotated with @RestApi should be eager singletons.");
-            }
+            Rex.addRoutes(provision.provision(), router,
+                    RequestHandlerUnexpectedErrorPolicy.SEND_GENERIC_ERROR_RESPONSE);
         }
     }
 }

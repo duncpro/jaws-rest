@@ -1,4 +1,4 @@
-package com.duncpro.jaws.rest;
+package com.duncpro.jaws;
 
 import com.google.inject.Scopes;
 import com.google.inject.spi.ProvisionListener;
@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
  * Listens for provisions of {@link AutoCloseable} {@link javax.inject.Singleton} and registers
  * a shutdown hook with {@link AWSLambdaRuntime} invoking the {@link AutoCloseable#close()} member method.
  *
- * An instance of {@link AWSLambdaRuntime} can be acquired by implementing {@link LNTLambdaRequestHandler}.
+ * An instance of {@link AWSLambdaRuntime} can be acquired by implementing {@link LNTRequestHandler}.
  */
 public class SingletonCloser implements ProvisionListener  {
     private final AWSLambdaRuntime awsLambdaRuntime;
@@ -20,14 +20,14 @@ public class SingletonCloser implements ProvisionListener  {
 
     @Override
     public <T> void onProvision(ProvisionInvocation<T> provision) {
-        final var provisionedObj = provision.provision();
+        final var type = provision.getBinding().getKey().getTypeLiteral().getRawType();
 
         final var isSingleton = Scopes.isSingleton(provision.getBinding());
-        final var isCloseable = AutoCloseable.class.isAssignableFrom(provisionedObj.getClass());
+        final var isCloseable = AutoCloseable.class.isAssignableFrom(type);
 
         if (isSingleton && isCloseable) {
             awsLambdaRuntime.addShutdownHook(() ->
-                    close((AutoCloseable) provisionedObj));
+                    close((AutoCloseable) provision.provision()));
         }
     }
 
