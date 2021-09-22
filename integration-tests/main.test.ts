@@ -19,38 +19,15 @@ const GENERAL_API_CALL_TIMEOUT = 1000 * 30;
 
 describe('integration tests', () => {
     test('API endpoint responds with status code 200', async () => {
-        const response = await fetch(restApiBaseUrl);
+        const response = await fetch(restApiBaseUrl + '/pets/1234', {
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
 
         expect(response.status).toEqual(200);
+        expect(await response.json()).toEqual({
+            petId: '1234'
+        });
     }, GENERAL_API_CALL_TIMEOUT);
-
-    describe('proxy function access', () => {
-        let echoResponse: EchoResponseBody;
-
-        beforeAll(async () => {
-            const response = await fetch(restApiBaseUrl + '/hello' + '/world?id=123', {
-                method: 'POST',
-                body: 'hello world'
-            });
-            const responseBodyContent = (await response.buffer()).toString();
-            echoResponse = JSON.parse(responseBodyContent);
-        }, GENERAL_API_CALL_TIMEOUT);
-
-        test('Proxy function has access to HTTP method', async () => {
-            expect(echoResponse.requestMethod).toEqual('POST');
-        });
-
-        test('Proxy function has access to request body', async () => {
-            expect(echoResponse.requestBody).toEqual('hello world');
-        });
-
-        test('Proxy function has access to request path', async () => {
-            // Notice that AWS includes a leading slash
-            expect(echoResponse.requestPath).toEqual('/hello/world');
-        });
-
-        test('Proxy function has access to request query params', async () => {
-            expect(echoResponse.requestQueryParams.id).toEqual('123');
-        })
-    });
 });

@@ -6,6 +6,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.duncpro.jaws.AWSLambdaIntegrationModule;
 import com.duncpro.jaws.AWSLambdaRuntime;
 import com.duncpro.jaws.LNTRequestHandler;
+import com.duncpro.jaws.RexIntegrationModule;
 import com.duncpro.jroute.HttpMethod;
 import com.duncpro.jroute.Path;
 import com.duncpro.jroute.router.Router;
@@ -28,8 +29,11 @@ public class AWSLambdaEntryPoint extends LNTRequestHandler<APIGatewayProxyReques
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent apiGatewayRequest, Context context, AWSLambdaRuntime runtime) {
-        Guice.createInjector(new AWSLambdaIntegrationModule(runtime), new MainModule())
-                .injectMembers(this);
+        Guice.createInjector(
+                new AWSLambdaIntegrationModule(runtime),
+                new MainModule(),
+                new RexIntegrationModule()
+        ).injectMembers(this);
 
         final var rexResponse = Rex.handleRequest(convertRequest(apiGatewayRequest), router, httpIntegrator);
 

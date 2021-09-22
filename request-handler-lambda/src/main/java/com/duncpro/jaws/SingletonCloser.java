@@ -26,8 +26,8 @@ public class SingletonCloser implements ProvisionListener  {
         final var isCloseable = AutoCloseable.class.isAssignableFrom(type);
 
         if (isSingleton && isCloseable) {
-            awsLambdaRuntime.addShutdownHook(() ->
-                    close((AutoCloseable) provision.provision()));
+            final var provisioned = provision.provision();
+            awsLambdaRuntime.addShutdownHook(() -> close((AutoCloseable) provisioned));
         }
     }
 

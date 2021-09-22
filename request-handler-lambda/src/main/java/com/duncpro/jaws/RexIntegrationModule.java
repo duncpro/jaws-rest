@@ -8,17 +8,15 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.matcher.Matchers;
 
-public class AWSLambdaIntegrationModule extends AbstractModule {
-    private final AWSLambdaRuntime runtime;
-
-    public AWSLambdaIntegrationModule(AWSLambdaRuntime runtime) {
-        this.runtime = runtime;
-    }
+public class RexIntegrationModule extends AbstractModule {
+    private final Router<JavaMethodRequestHandler> router = new TreeRouter<>();
 
     @Override
     public void configure() {
-        bind(AWSLambdaRuntime.class).toInstance(runtime);
-        bindListener(Matchers.any(), new SingletonCloser(runtime));
+        requireBinding(HttpIntegrator.class);
+        bindListener(Matchers.any(), new RestEndpointRegistrar(router));
     }
 
+    @Provides
+    public Router<JavaMethodRequestHandler> provideRouter() { return router; }
 }

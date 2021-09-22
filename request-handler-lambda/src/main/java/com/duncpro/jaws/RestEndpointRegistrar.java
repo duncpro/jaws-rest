@@ -2,7 +2,6 @@ package com.duncpro.jaws;
 
 import com.duncpro.jroute.router.Router;
 import com.duncpro.rex.JavaMethodRequestHandler;
-import com.duncpro.rex.RequestHandlerUnexpectedErrorPolicy;
 import com.duncpro.rex.Rex;
 import com.google.inject.spi.ProvisionListener;
 
@@ -19,8 +18,7 @@ public class RestEndpointRegistrar implements ProvisionListener {
         final var isRestApi = type.isAnnotationPresent(RestApi.class);
 
         if (isRestApi) {
-            Rex.addRoutes(provision.provision(), router,
-                    RequestHandlerUnexpectedErrorPolicy.SEND_GENERIC_ERROR_RESPONSE);
+            Rex.addRoutes(provision.provision(), router);
         }
     }
 }

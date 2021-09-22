@@ -14,7 +14,7 @@ import static org.mockito.Mockito.*;
 
 class AWSLambdaIntegrationModuleTest {
     static class SingletonAutoCloseable implements AutoCloseable {
-        boolean isClosed = false;
+        volatile boolean isClosed = false;
         @Override
         public void close() {
             isClosed = true;
