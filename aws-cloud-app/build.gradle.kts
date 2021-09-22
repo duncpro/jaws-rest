@@ -4,6 +4,17 @@ dependencies {
     restRequestHandlerPackage(project(":request-handler-lambda", "lambdaPackage"))
 }
 
+val destroy by tasks.registering {
+    dependsOn(restRequestHandlerPackage)
+
+    doLast {
+        exec {
+            commandLine("cdk", "destroy", "--force")
+            environment("PATH_TO_REQUEST_HANDLER_PACKAGE", restRequestHandlerPackage.singleFile.absolutePath)
+        }
+    }
+}
+
 val deploy by tasks.registering {
     dependsOn(restRequestHandlerPackage)
 

@@ -22,3 +22,7 @@ to build, deploy, and test your API.
 ### Infrastructure as Code via AWS CDK
 The entire application is deployable via a single Gradle command thanks to
 the AWS Cloud Development Kit CLI.
+
+## Gradle Tasks
+- `:integration-test:run`: build, run unit tests, deploy, run integration tests
+- `destroy`: remove the application from AWS
