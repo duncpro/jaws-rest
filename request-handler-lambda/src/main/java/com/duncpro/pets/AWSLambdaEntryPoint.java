@@ -1,4 +1,4 @@
-package com.example;
+package com.duncpro.pets;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
@@ -48,14 +48,14 @@ public class AWSLambdaEntryPoint extends LNTRequestHandler<APIGatewayProxyReques
         );
     }
 
-    private APIGatewayProxyResponseEvent convertResponse(HttpResponse rexResponse) {
+    private APIGatewayProxyResponseEvent convertResponse(SerializedHttpResponse rexResponse) {
         final var apiGatewayResponse = new APIGatewayProxyResponseEvent();
 
         if (rexResponse.getBody().isPresent()) {
             apiGatewayResponse.setBody(new String(rexResponse.getBody().get()));
         }
 
-        apiGatewayResponse.setStatusCode(rexResponse.getHttpResponseCode());
+        apiGatewayResponse.setStatusCode(rexResponse.getStatusCode());
 
         return apiGatewayResponse;
     }

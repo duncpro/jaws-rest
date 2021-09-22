@@ -12,7 +12,7 @@ repositories {
 
 dependencies {
     implementation("com.duncpro:jroute:31cdd9dab1")
-    implementation("com.duncpro:rex:5c5ae534ef")
+    implementation("com.duncpro:rex:-SNAPSHOT")
 
     // Logging
     implementation("org.slf4j:slf4j-api:1.7.31")

@@ -1,10 +1,8 @@
-package com.example;
+package com.duncpro.pets;
 
 import com.duncpro.jaws.RestApi;
 import com.duncpro.jroute.HttpMethod;
-import com.duncpro.rex.HttpEndpoint;
-import com.duncpro.rex.HttpResource;
-import com.duncpro.rex.PathParam;
+import com.duncpro.rex.*;
 
 @RestApi
 @HttpResource(route = "/pets")
@@ -19,7 +17,8 @@ public class PetsRestApi {
 
     @HttpResource(route = "/{petId}")
     @HttpEndpoint(HttpMethod.GET)
-    public Pet handleGetPetRequest(@PathParam("petId") String petId) {
-        return new Pet(petId);
+    public HttpResponse<Pet> handleGetPetRequest(@PathParam("petId") String petId) {
+        final var pet = new Pet(petId);
+        return new HttpResponse<>(HttpStatus.OK, pet);
     }
 }

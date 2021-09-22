@@ -1,4 +1,4 @@
-package com.example;
+package com.duncpro.pets;
 
 import com.duncpro.rex.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,8 +16,6 @@ public class MainModule extends AbstractModule {
 
     @Provides
     public HttpIntegrator provideHttpIntegrator(ObjectMapper jackson) {
-        final var rootIntegrator = new HttpIntegratorBuilder();
-
         final var basicIntegrator = new BasicHttpIntegratorBuilder();
         JavaHttpIntegrations.addAll(basicIntegrator);
 
@@ -37,7 +35,6 @@ public class MainModule extends AbstractModule {
             }
         });
 
-        rootIntegrator.inheritFrom(basicIntegrator.build());
-        return rootIntegrator.build();
+        return basicIntegrator.build();
     }
 }
