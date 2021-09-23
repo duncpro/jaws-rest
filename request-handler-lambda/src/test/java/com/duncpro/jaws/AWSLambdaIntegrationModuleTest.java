@@ -43,7 +43,7 @@ class AWSLambdaIntegrationModuleTest {
     public void doesCloseSingletons() {
         final var context = mock(Context.class);
         when(context.getRemainingTimeInMillis()).thenReturn(Integer.MAX_VALUE);
-        final var lambdaRuntime = new AWSLambdaRuntime(context);
+        final var lambdaRuntime = AWSLambdaRuntime.fromLambdaContext(context);
 
         final var injector = Guice.createInjector(new AWSLambdaIntegrationModule(lambdaRuntime),
                 new SingletonModule());

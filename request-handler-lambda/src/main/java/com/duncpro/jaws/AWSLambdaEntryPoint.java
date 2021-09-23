@@ -1,4 +1,4 @@
-package com.duncpro.pets;
+package com.duncpro.jaws;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
@@ -10,6 +10,7 @@ import com.duncpro.jaws.RexIntegrationModule;
 import com.duncpro.jroute.HttpMethod;
 import com.duncpro.jroute.Path;
 import com.duncpro.jroute.router.Router;
+import com.duncpro.pets.MainModule;
 import com.duncpro.rex.*;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
@@ -42,7 +43,7 @@ public class AWSLambdaEntryPoint extends LNTRequestHandler<APIGatewayProxyReques
 
     private HttpRequest convertRequest(APIGatewayProxyRequestEvent apiGatewayRequest) {
         return new HttpRequest(
-                apiGatewayRequest.getHeaders(),
+                apiGatewayRequest.getMultiValueHeaders(),
                 apiGatewayRequest.getQueryStringParameters(),
                 Optional.ofNullable(apiGatewayRequest.getBody())
                         .map(String::getBytes)

@@ -6,7 +6,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 public abstract class LNTRequestHandler<I, O> implements RequestHandler<I, O> {
     @Override
     public final O handleRequest(I input, Context context) {
-        final var runtime = new AWSLambdaRuntime(context);
+        final var runtime = AWSLambdaRuntime.fromLambdaContext(context);
 
         final var response = handleRequest(input, context, runtime);
 

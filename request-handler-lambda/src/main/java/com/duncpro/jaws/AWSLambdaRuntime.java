@@ -9,6 +9,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 /**
@@ -17,10 +18,14 @@ import java.util.stream.Stream;
  */
 public class AWSLambdaRuntime {
     private final Queue<Runnable> shutdownHooks = new ConcurrentLinkedQueue<>();
-    private final Context lambdaInvocationContext;
+    private final Supplier<Integer> remainingTime;
 
-    AWSLambdaRuntime(Context lambdaInvocationContext) {
-        this.lambdaInvocationContext = lambdaInvocationContext;
+    AWSLambdaRuntime(Supplier<Integer> remainingTime) {
+        this.remainingTime = remainingTime;
+    }
+
+    public static AWSLambdaRuntime fromLambdaContext(Context context) {
+        return new AWSLambdaRuntime(context::getRemainingTimeInMillis);
     }
 
     /**
@@ -52,7 +57,7 @@ public class AWSLambdaRuntime {
 
         boolean didFinishExecuting = false;
         try {
-            didFinishExecuting = executor.awaitTermination(lambdaInvocationContext.getRemainingTimeInMillis(),
+            didFinishExecuting = executor.awaitTermination(remainingTime.get().longValue(),
                             TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             logger.error("The main thread was interrupted during the shutdown procedure." +

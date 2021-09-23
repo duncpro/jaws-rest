@@ -8,17 +8,24 @@ import com.duncpro.rex.*;
 @HttpResource(route = "/pets")
 @SuppressWarnings("unused")
 public class PetsRestApi {
-    public static class Pet {
+    public static class PetResponseBody {
         public final String petId;
-        Pet(String petId) {
+        public final String name;
+        PetResponseBody(String petId, String name) {
             this.petId = petId;
+            this.name = name;
         }
     }
 
+    public static class PetRequestBody {
+        public String name;
+    }
+
     @HttpResource(route = "/{petId}")
-    @HttpEndpoint(HttpMethod.GET)
-    public HttpResponse<Pet> handleGetPetRequest(@PathParam("petId") String petId) {
-        final var pet = new Pet(petId);
+    @HttpEndpoint(HttpMethod.POST)
+    public HttpResponse<PetResponseBody> handleGetPetRequest(@PathParam("petId") String petId,
+                                                             @RequestBody PetRequestBody body) {
+        final var pet = new PetResponseBody(petId, body.name);
         return new HttpResponse<>(HttpStatus.OK, pet);
     }
 }

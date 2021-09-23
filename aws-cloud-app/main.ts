@@ -8,7 +8,7 @@ export class MainStack extends cdk.Stack {
     super(scope, id, props);
 
     const requestHandler = new Function(this, 'RestRequestHandler', {
-      handler: 'com.duncpro.pets.AWSLambdaEntryPoint',
+      handler: 'com.duncpro.jaws.AWSLambdaEntryPoint',
       runtime: Runtime.JAVA_11,
       code: Code.fromAsset(process.env.PATH_TO_REQUEST_HANDLER_PACKAGE!),
       memorySize: 2048,

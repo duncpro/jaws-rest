@@ -1,18 +1,19 @@
+import kotlin.concurrent.thread
+import kotlin.streams.toList
+
 plugins {
     java
 }
 
-group = "org.example"
-version = "1.0-SNAPSHOT"
-
 repositories {
     mavenCentral()
-    maven("https://jitpack.io")
+//    maven("https://jitpack.io")
+    mavenLocal()
 }
 
 dependencies {
-    implementation("com.duncpro:jroute:31cdd9dab1")
-    implementation("com.duncpro:rex:-SNAPSHOT")
+    implementation("com.duncpro:JRoute:1.0-SNAPSHOT")
+    implementation("com.duncpro:Rex:1.0-SNAPSHOT")
 
     // Logging
     implementation("org.slf4j:slf4j-api:1.7.31")
@@ -53,6 +54,12 @@ val buildLambdaPackage by tasks.registering(Zip::class) {
 }
 val lambdaPackage: Configuration by configurations.creating;
 artifacts.add(lambdaPackage.name, buildLambdaPackage)
+
+val serve by tasks.registering(JavaExec::class) {
+    classpath = sourceSets.main.get().runtimeClasspath
+    main = "com.duncpro.jaws.LocalJawsServer"
+    standardInput = System.`in`
+}
 
 java.sourceCompatibility = JavaVersion.VERSION_11
 java.targetCompatibility = JavaVersion.VERSION_11
