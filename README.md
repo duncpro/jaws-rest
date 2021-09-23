@@ -12,6 +12,7 @@ Streaming HTTP requests/responses is not supported and is currently outside the 
 - [JRoute](https://github.com/duncpro/JRoute) for URL routing.
 - [Jackson](https://github.com/FasterXML/jackson) for JSON serialization.
 - [TypeScript](https://github.com/microsoft/TypeScript) / [Jest](https://github.com/facebook/jest) for API integration testing.
+- [Slf4j](https://github.com/qos-ch/slf4j) and [Log4j2](https://logging.apache.org/log4j/2.x/) for logging.
 
 ## Features
 - Run code before the Lambda exits using shutdown hooks.

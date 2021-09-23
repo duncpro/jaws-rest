@@ -7,13 +7,12 @@ plugins {
 
 repositories {
     mavenCentral()
-//    maven("https://jitpack.io")
-    mavenLocal()
+    maven("https://jitpack.io")
 }
 
 dependencies {
-    implementation("com.duncpro:JRoute:1.0-SNAPSHOT")
-    implementation("com.duncpro:Rex:1.0-SNAPSHOT")
+    implementation("com.duncpro:jroute:-SNAPSHOT")
+    implementation("com.duncpro:rex:-SNAPSHOT")
 
     // Logging
     implementation("org.slf4j:slf4j-api:1.7.31")
