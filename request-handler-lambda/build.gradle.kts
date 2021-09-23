@@ -1,6 +1,3 @@
-import kotlin.concurrent.thread
-import kotlin.streams.toList
-
 plugins {
     java
 }
