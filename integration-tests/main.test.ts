@@ -1,14 +1,6 @@
 import fetch from 'node-fetch';
-import * as fs from 'fs';
 
 const restApiBaseUrl = process.env.API_URL;
-
-interface EchoResponseBody {
-    requestBody: string,
-    requestMethod: string,
-    requestQueryParams: { [key: string]: string },
-    requestPath: string
-}
 
 const GENERAL_API_CALL_TIMEOUT = 1000 * 30;
 
