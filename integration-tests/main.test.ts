@@ -5,7 +5,7 @@ const restApiBaseUrl = process.env.API_URL;
 const GENERAL_API_CALL_TIMEOUT = 1000 * 30;
 
 describe('integration tests', () => {
-    test('API endpoint responds with status code 200 and expected payload', async () => {
+    test('/pets/1234 responds with status code 200 and expected payload', async () => {
         const response = await fetch(restApiBaseUrl + '/pets/1234', {
             method: 'POST',
             headers: {
