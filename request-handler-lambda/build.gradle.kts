@@ -4,12 +4,19 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven {
+        url = uri("https://duncpro-personal-618824625980.d.codeartifact.us-east-1.amazonaws.com/maven/duncpro-personal/")
+        credentials {
+            username = "aws"
+            password = System.getenv("CODEARTIFACT_AUTH_TOKEN")
+        }
+    }
     maven("https://jitpack.io")
 }
 
 dependencies {
-    implementation("com.duncpro:jroute:-SNAPSHOT")
-    implementation("com.duncpro:rex:-SNAPSHOT")
+    implementation("com.duncpro:jroute:1.0-SNAPSHOT-2")
+    implementation("com.duncpro:rex:1.0-SNAPSHOT-3")
 
     // Logging
     implementation("org.slf4j:slf4j-api:1.7.31")
