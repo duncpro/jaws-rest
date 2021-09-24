@@ -17,6 +17,7 @@ repositories {
 dependencies {
     implementation("com.duncpro:jroute:1.0-SNAPSHOT-2")
     implementation("com.duncpro:rex:1.0-SNAPSHOT-3")
+    implementation("com.duncpro:jackal:1.0-SNAPSHOT-2")
 
     // Logging
     implementation("org.slf4j:slf4j-api:1.7.31")
