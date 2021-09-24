@@ -51,10 +51,13 @@ against it.
 ```bash
 gradle :integration-test:run
 ```
+If you've never used AWS CDK before you will need to install it and run `cdk boostrap` before this step.
 ### Add Another Endpoint
-Since JAWS uses AWS API Gateway [Proxy Integration](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-set-up-simple-proxy.html)
-and Rex, adding a new endpoint is as simple
-as declaring a new method.
+JAWS uses AWS API Gateway [Proxy Integration](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-set-up-simple-proxy.html),
+which allows a single Lambda function to service multiple HTTP endpoints.
+
+This means that adding a new endpoint is as simple as declaring a new
+[Rex](https://github.com/duncpro/Rex) request handler method.
 
 ```java
 // Just add a snippet like this to com.duncpro.pets.PetsRestApi
