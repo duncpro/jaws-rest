@@ -87,11 +87,8 @@ class MyEndpoints {}
 If this annotation is present Guice will automatically register the object with Rex.
 ### Shutdown Hooks
 AWS provides no documentation describing the behavior of `Runtime.addShutdownHook` in Lambda containers.
-
 JAWS remedies this by providing an injectable utility class `AWSLambdaRuntime` which can be used as an alternative.
-
 These shutdown hooks are run immediately before the HTTP response is returned from the Lambda function.
-#### Shutdown Hook Example Usage
 ```java
 @Singleton
 class MyDatabaseService {
@@ -102,3 +99,8 @@ class MyDatabaseService {
 }
 ```
 These hooks are also run by the local development server.
+
+### AutoClosable Shutdown Hooks
+By default JAWS registers a binding-listener called `SingletonCloser` with Guice. This class will automatically register
+a shutdown hook that calls `AutoClosable#close` for each `Singleton` class implementing `AutoClosable` that is bound
+with Guice.
