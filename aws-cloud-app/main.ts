@@ -1,19 +1,55 @@
 import * as cdk from '@aws-cdk/core';
+import {CfnOutput, Duration} from '@aws-cdk/core';
 import {LambdaRestApi} from '@aws-cdk/aws-apigateway';
 import {Code, Function, Runtime} from '@aws-cdk/aws-lambda'
-import {CfnOutput, Duration} from '@aws-cdk/core';
+import {
+  AuroraCapacityUnit,
+  AuroraPostgresEngineVersion,
+  DatabaseClusterEngine,
+  ServerlessCluster
+} from '@aws-cdk/aws-rds';
+import {Vpc} from '@aws-cdk/aws-ec2';
 
 export class MainStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    const masterVpc = new Vpc(this, 'MasterVPC', {});
+
+    const masterDb = new ServerlessCluster(this, 'MasterDB', {
+      enableDataApi: true,
+      scaling: {
+        autoPause: Duration.minutes(5),
+        minCapacity: AuroraCapacityUnit.ACU_2,
+        maxCapacity: AuroraCapacityUnit.ACU_2
+      },
+      vpc: masterVpc,
+      engine: DatabaseClusterEngine.auroraPostgres({
+        version: AuroraPostgresEngineVersion.VER_10_16
+      }),
+    });
+
+    new CfnOutput(this, 'MasterDbArn', {
+      value: masterDb.clusterArn
+    });
+
+    new CfnOutput(this, 'MasterDbSecretArn', {
+      value: masterDb.secret?.secretArn!
+    });
+
     const requestHandler = new Function(this, 'RestRequestHandler', {
       handler: 'com.duncpro.jaws.AWSLambdaEntryPoint',
       runtime: Runtime.JAVA_11,
       code: Code.fromAsset(process.env.PATH_TO_REQUEST_HANDLER_PACKAGE!),
+      environment: {
+        'MASTER_DB_ARN': masterDb.clusterArn,
+        'MASTER_DB_SECRET_ARN': masterDb.secret?.secretArn!
+      },
       memorySize: 2048,
       timeout: Duration.seconds(30) // Cold starts are slow
     });
+
+    masterDb.grantDataApiAccess(requestHandler);
 
     const mainRestApi = new LambdaRestApi(this, 'MainRestApi', {
       handler: requestHandler,

@@ -28,6 +28,7 @@ val runLocal by tasks.registering {
 
 val run by tasks.registering {
     dependsOn(cfnOutputs)
+    dependsOn(tasks.findByPath(":deploy"))
     doLast {
         exec {
             environment("API_URL", readDeployedApiUrl(cfnOutputs.singleFile.absolutePath))

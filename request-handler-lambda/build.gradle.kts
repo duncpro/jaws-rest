@@ -15,8 +15,16 @@ repositories {
 }
 
 dependencies {
+    // For local deployment only, not used in production or staging.
+    // TODO: Do not include this in the Lambda package
+    implementation("com.h2database:h2:1.4.200")
+
+    implementation(platform("software.amazon.awssdk:bom:2.15.0"))
+    implementation("software.amazon.awssdk:rdsdata")
+
     implementation("com.duncpro:jroute:1.0-SNAPSHOT-2")
-    implementation("com.duncpro:rex:1.0-SNAPSHOT-3")
+    implementation("com.duncpro:jackal:1.0-SNAPSHOT-2")
+    implementation("com.duncpro:rex:1.0-SNAPSHOT-4")
 
     // Logging
     implementation("org.slf4j:slf4j-api:1.7.31")
@@ -62,6 +70,7 @@ val serve by tasks.registering(JavaExec::class) {
     classpath = sourceSets.main.get().runtimeClasspath
     main = "com.duncpro.jaws.LocalJawsServer"
     standardInput = System.`in`
+    environment("DB_INIT_SCRIPT", rootProject.projectDir.resolve("setup-database.sql"));
 }
 
 java.sourceCompatibility = JavaVersion.VERSION_11

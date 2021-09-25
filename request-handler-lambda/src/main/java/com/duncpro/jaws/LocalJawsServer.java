@@ -3,11 +3,9 @@ package com.duncpro.jaws;
 import com.duncpro.jroute.HttpMethod;
 import com.duncpro.jroute.Path;
 import com.duncpro.jroute.router.Router;
+import com.duncpro.pets.LocalDeploymentModule;
 import com.duncpro.pets.MainModule;
-import com.duncpro.rex.HttpIntegrator;
-import com.duncpro.rex.HttpRequest;
-import com.duncpro.rex.JavaMethodRequestHandler;
-import com.duncpro.rex.Rex;
+import com.duncpro.rex.*;
 import com.google.inject.Guice;
 import com.sun.net.httpserver.*;
 import org.slf4j.Logger;
@@ -77,13 +75,27 @@ public class LocalJawsServer {
         return params;
     }
 
+    private void sendRexResponse(HttpExchange exchange, SerializedHttpResponse response) {
+        try {
+            exchange.sendResponseHeaders(response.getStatusCode(), 0);
+            if (response.getBody().isPresent()) {
+                exchange.getResponseBody().write(response.getBody().get());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void onRequest(HttpExchange exchange) {
         final var runtime = new AWSLambdaRuntime(() -> Integer.MAX_VALUE); // No timeout
 
         // Inject on each request to mirror the behavior of the application when it is running on AWS Lambda
-        Guice.createInjector(new MainModule(), new RexIntegrationModule(),
-                new AWSLambdaIntegrationModule(runtime))
-                .injectMembers(this);
+        Guice.createInjector(
+                new RexIntegrationModule(),
+                new AWSLambdaIntegrationModule(runtime),
+                new MainModule(),
+                new LocalDeploymentModule()
+        ).injectMembers(this);
 
         final var rexRequest = new HttpRequest(
                 exchange.getRequestHeaders(),
@@ -93,20 +105,15 @@ public class LocalJawsServer {
                 HttpMethod.valueOf(exchange.getRequestMethod())
         );
 
-        final var response = Rex.handleRequest(rexRequest, router, httpIntegrator);
-
+        SerializedHttpResponse response;
         try {
-            exchange.sendResponseHeaders(response.getStatusCode(),
-                    0);
-            if (response.getBody().isPresent()) {
-                exchange.getResponseBody().write(response.getBody().get());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            exchange.close();
+            response = Rex.handleRequest(rexRequest, router, httpIntegrator);
+        } catch (RequestHandlerException e) {
+            logger.error("An unexpected error occurred while servicing a request", e);
+            response = new SerializedHttpResponse(HttpStatus.INTERNAL_SERVER_ERROR.getStatusCode());
         }
 
+        sendRexResponse(exchange, response);
         exchange.close();
 
         runtime.runShutdownHooks();

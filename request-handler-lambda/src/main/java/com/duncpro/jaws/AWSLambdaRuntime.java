@@ -70,5 +70,13 @@ public class AWSLambdaRuntime {
         }
     }
 
+    /**
+     * Returns the duration (in milliseconds) until this Lambda instance is killed by AWS.
+     * This is an acceptable timeout to use inside of shutdown hooks when closing connections and releasing resources.
+     */
+    public int getDurationUntilLambdaTimeout() {
+        return remainingTime.get();
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(AWSLambdaRuntime.class);
 }
