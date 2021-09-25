@@ -1,8 +1,23 @@
 # JAWS-REST
 Boilerplate Gradle project for developing serverless RESTful API's on AWS using Java.
 
-JAWS is ideal for REST APIs which deal in relatively small and discrete payloads such as JSON objects.
-Streaming HTTP requests/responses is not supported and is currently outside the scope of this project.
+The primary motivation behind JAWS is to provide a platform for developing REST APIs which have minimal hosting cost,
+until the user-base grows significantly. By leveraging technologies
+such as **RDS Aurora Serverless**, **AWS API Gateway**, and **AWS Lambda**, JAWS applications have a hosting cost
+that is proportional to the amount of API calls which are being made. Another
+advantage to using a serverless architecture is that your application can effectively scale to any size in a very
+short amount of time without any human intervention. The aforementioned features make serverless ideal for startup projects.
+
+Since JAWS uses [Rex](https://github.com/duncpro/Rex) for request handling and [Jackal](https://github.com/duncpro/Jackal)
+for database interaction, migrating a JAWS application to serverful architecture is as simple as swapping in a
+new Guice module. In fact, JAWS applications can be run 100% locally right out of the box using the gradle `serve` task.
+
+
+## Caveats
+- Streaming HTTP requests/responses is not supported and is currently outside the scope of this project. JAWS is ideal 
+REST applications which deal in discrete payloads such as JSON objects.
+- Unlike API Gateway and Lambda, RDS Aurora Serverless is not eligible for AWS free-tier. This means that JAWS applications
+are not completely free to host if you use the  relational-database.
 
 ## What's Included
 - [Gradle](https://github.com/gradle/gradle) for task automation.
@@ -17,15 +32,15 @@ Streaming HTTP requests/responses is not supported and is currently outside the 
 - [H2](https://github.com/h2database/h2database) for local database testing.
 
 ## Features
-- Run code before the Lambda exits using shutdown hooks.
-- Automatic discovery of request handler methods when their classes are bound
-as Guice singletons and annotated with `@RestApi`.
 - Deploy to AWS and run integration tests with a single Gradle task`:integration-tests:run`
 - Full support for offline local development. Just use the gradle task `serve` to run the dev server and
-`:integration-tests:runLocal` to run your tests against that server.
+  `:integration-tests:runLocal` to run your tests against that server.
+- Automatic discovery of request handler methods when their classes are bound
+as Guice singletons and annotated with `@RestApi`.
 - Other useful Gradle tasks like `deploy` and `destroy` which make interacting
 with AWS CDK a breeze.
 - Preconfigured RDS Aurora Serverless database.
+- Run code before the Lambda exits using injectable shutdown hook utility.
 
 
 ## Getting Started

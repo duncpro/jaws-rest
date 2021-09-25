@@ -22,7 +22,6 @@ public class MainModule extends AbstractModule {
     @Override
     public void configure() {
         bind(ObjectMapper.class).toInstance(new ObjectMapper());
-        bind(PetDirectoryRestApi.class).asEagerSingleton();
 
         // Features
         install(new PetDirectoryModule());

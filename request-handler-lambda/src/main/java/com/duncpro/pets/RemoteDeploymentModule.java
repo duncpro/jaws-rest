@@ -12,6 +12,8 @@ import java.util.concurrent.ExecutorService;
 
 /**
  * This module is used in conjunction with {@link MainModule} when running the application on the AWS Cloud.
+ * It provides bindings for AWS cloud services such as RDS.
+ * This module is complimentary to {@link LocalDeploymentModule}.
  */
 public class RemoteDeploymentModule extends AbstractModule {
     @Provides

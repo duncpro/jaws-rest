@@ -2,12 +2,10 @@ package com.duncpro.pets;
 
 import com.duncpro.jackal.RelationalDatabase;
 import com.duncpro.jackal.jdbc.DataSourceWrapper;
-import com.duncpro.jackal.rds.AmazonDataAPIDatabase;
 import com.duncpro.jaws.AWSLambdaRuntime;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import org.h2.jdbcx.JdbcDataSource;
-import org.h2.jdbcx.JdbcDataSourceFactory;
 import org.h2.tools.RunScript;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +21,8 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * This module is used in conjunction with {@link MainModule} when running the application locally, such as during
- * testing and development.
+ * integration testing and development. It's responsible for providing mock implementations of cloud services,
+ * such as substituting an H2 database for an RDS database.
  */
 public class LocalDeploymentModule extends AbstractModule {
     private static final Logger logger = LoggerFactory.getLogger(LocalDeploymentModule.class);
