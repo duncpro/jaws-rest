@@ -77,8 +77,7 @@ public class LocalJawsServer {
 
     private void sendRexResponse(HttpExchange exchange, SerializedHttpResponse response) {
         try {
-            exchange.sendResponseHeaders(response.getStatusCode(),
-                    0);
+            exchange.sendResponseHeaders(response.getStatusCode(), 0);
             if (response.getBody().isPresent()) {
                 exchange.getResponseBody().write(response.getBody().get());
             }
@@ -106,10 +105,15 @@ public class LocalJawsServer {
                 HttpMethod.valueOf(exchange.getRequestMethod())
         );
 
-        final var response = Rex.handleRequest(rexRequest, router, httpIntegrator);
+        SerializedHttpResponse response;
+        try {
+            response = Rex.handleRequest(rexRequest, router, httpIntegrator);
+        } catch (RequestHandlerException e) {
+            logger.error("An unexpected error occurred while servicing a request", e);
+            response = new SerializedHttpResponse(HttpStatus.INTERNAL_SERVER_ERROR.getStatusCode());
+        }
+
         sendRexResponse(exchange, response);
-
-
         exchange.close();
 
         runtime.runShutdownHooks();

@@ -5,22 +5,33 @@ const restApiBaseUrl = process.env.API_URL;
 const GENERAL_API_CALL_TIMEOUT = 1000 * 30;
 
 describe('integration tests', () => {
-    test('/pets/1234 responds with status code 200 and expected payload', async () => {
-        const response = await fetch(restApiBaseUrl + '/pets/1234', {
+    test('POST pets', async () => {
+        const response = await fetch(restApiBaseUrl + '/pets', {
             method: 'POST',
             headers: {
-                'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                name: 'Cocoa'
+                petName: 'Cocoa',
+                owner: 'Duncan'
             })
         });
 
         expect(response.status).toEqual(200);
+    }, GENERAL_API_CALL_TIMEOUT);
+
+    test('GET pets/*/owner', async () => {
+        const response = await fetch(restApiBaseUrl + '/pets/Cocoa/owner', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+            },
+        });
+
+        expect(response.status).toEqual(200);
         expect(await response.json()).toEqual({
-            petId: '1234',
-            name: 'Cocoa'
+            didFindOwner: true,
+            owner: 'Duncan'
         });
     }, GENERAL_API_CALL_TIMEOUT);
 });

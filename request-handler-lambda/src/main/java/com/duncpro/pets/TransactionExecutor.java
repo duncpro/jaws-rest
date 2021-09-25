@@ -1,2 +1,11 @@
-package com.duncpro.pets;public @interface TransactionExecutor {
+package com.duncpro.pets;
+
+import com.google.inject.BindingAnnotation;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@BindingAnnotation
+@Retention(RetentionPolicy.RUNTIME)
+public @interface TransactionExecutor {
 }

@@ -15,7 +15,8 @@ val destroy by tasks.registering {
     }
 }
 
-val deploy by tasks.registering {
+
+val deployCdkStack by tasks.registering {
     dependsOn(restRequestHandlerPackage)
 
     doLast {
@@ -33,4 +34,4 @@ val deploy by tasks.registering {
 
 // Expose the deployed REST API URL to the integration testing module.
 val cfnOutputs by configurations.registering {}
-artifacts.add(cfnOutputs.name, deploy)
+artifacts.add(cfnOutputs.name, deployCdkStack)

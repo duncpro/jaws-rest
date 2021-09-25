@@ -1,4 +1,4 @@
-package com.duncpro.pets;
+package com.duncpro.pets.directory;
 
 import com.duncpro.jackal.RelationalDatabase;
 
@@ -20,5 +20,12 @@ public class PetDirectory {
             return results.findFirst()
                     .flatMap(row -> row.get("owner", String.class));
         }
+    }
+
+    public void addPet(String petName, String owner) {
+        db.prepareStatement("INSERT INTO pet (pet_name, owner) VALUES (?, ?);")
+                .withArguments(petName, owner)
+                .executeUpdate()
+                .join();
     }
 }

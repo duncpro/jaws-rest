@@ -13,6 +13,8 @@ Streaming HTTP requests/responses is not supported and is currently outside the 
 - [Jackson](https://github.com/FasterXML/jackson) for JSON serialization.
 - [TypeScript](https://github.com/microsoft/TypeScript) / [Jest](https://github.com/facebook/jest) for API integration testing.
 - [Slf4j](https://github.com/qos-ch/slf4j) and [Log4j2](https://logging.apache.org/log4j/2.x/) for logging.
+- [Jackal](https://github.com/duncpro/Jackal) for making SQL queries.
+- [H2](https://github.com/h2database/h2database) for local database testing.
 
 ## Features
 - Run code before the Lambda exits using shutdown hooks.
@@ -23,6 +25,7 @@ as Guice singletons and annotated with `@RestApi`.
 `:integration-tests:runLocal` to run your tests against that server.
 - Other useful Gradle tasks like `deploy` and `destroy` which make interacting
 with AWS CDK a breeze.
+- Preconfigured RDS Aurora Serverless database.
 
 
 ## Getting Started
@@ -60,7 +63,6 @@ This means that adding a new endpoint is as simple as declaring a new
 [Rex](https://github.com/duncpro/Rex) request handler method.
 
 ```java
-// Just add a snippet like this to com.duncpro.pets.PetsRestApi
 @HttpEndpoint(HttpMethod.GET)
 @HttpResource(route = "/ping")
 public HttpResponse<String> handlePingRequest() {
