@@ -1,5 +1,6 @@
 package com.duncpro.pets;
 
+import com.duncpro.jackal.RelationalDatabaseException;
 import com.duncpro.jaws.AWSLambdaRuntime;
 import com.duncpro.pets.directory.PetDirectoryModule;
 import com.duncpro.rex.*;
@@ -8,6 +9,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.http.HttpStatusCode;
 
 import javax.inject.Singleton;
 import java.io.IOException;
@@ -46,7 +48,6 @@ public class MainModule extends AbstractModule {
                 throw new ConversionException(e);
             }
         });
-
         return basicIntegrator.build();
     }
 
