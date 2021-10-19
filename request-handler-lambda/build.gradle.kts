@@ -23,8 +23,8 @@ dependencies {
     implementation("software.amazon.awssdk:rdsdata")
 
     implementation("com.duncpro:jroute:1.0-SNAPSHOT-2")
-    implementation("com.duncpro:jackal:1.0-SNAPSHOT-2")
-    implementation("com.duncpro:rex:1.0-SNAPSHOT-4")
+    implementation("com.duncpro:jackal:1.0-SNAPSHOT-10")
+    implementation("com.duncpro:rex:1.0-SNAPSHOT-5")
 
     // Logging
     implementation("org.slf4j:slf4j-api:1.7.31")

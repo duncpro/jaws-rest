@@ -1,6 +1,7 @@
 package com.duncpro.pets;
 
 import com.duncpro.jackal.RelationalDatabase;
+import com.duncpro.jackal.RelationalDatabaseException;
 import com.duncpro.jackal.jdbc.DataSourceWrapper;
 import com.duncpro.jaws.AWSLambdaRuntime;
 import com.google.inject.AbstractModule;
@@ -47,7 +48,6 @@ public class LocalDeploymentModule extends AbstractModule {
     @Provides
     @Singleton
     public RelationalDatabase provideRelationalDatabase(AWSLambdaRuntime runtime,
-                                                        @TransactionExecutor ExecutorService transactionExecutor,
                                                         @StatementExecutor ExecutorService statementExecutor) {
         final JdbcDataSource h2 = new JdbcDataSource();
         h2.setURL("jdbc:h2:~/test;DB_CLOSE_ON_EXIT=FALSE;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE");
@@ -62,8 +62,14 @@ public class LocalDeploymentModule extends AbstractModule {
                     " file system.", e);
         }
 
-        final var db = new DataSourceWrapper(h2, transactionExecutor, statementExecutor);
-        runtime.addShutdownHook(() -> db.prepareStatement("SHUTDOWN").executeUpdate().join());
+        final var db = new DataSourceWrapper(h2, statementExecutor);
+        runtime.addShutdownHook(() -> {
+            try {
+                db.prepareStatement("SHUTDOWN").executeUpdate();
+            } catch (RelationalDatabaseException e) {
+                logger.error("Error occurred while shutting down the local H2 database.", e);
+            }
+        });
         return db;
     }
 }

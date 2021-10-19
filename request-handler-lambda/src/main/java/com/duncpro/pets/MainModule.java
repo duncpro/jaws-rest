@@ -2,7 +2,6 @@ package com.duncpro.pets;
 
 import com.duncpro.jaws.AWSLambdaRuntime;
 import com.duncpro.pets.directory.PetDirectoryModule;
-import com.duncpro.pets.directory.PetDirectoryRestApi;
 import com.duncpro.rex.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.AbstractModule;
@@ -53,7 +52,6 @@ public class MainModule extends AbstractModule {
 
     @Provides
     @Singleton
-    @TransactionExecutor
     public ExecutorService provideTransactionExecutor(AWSLambdaRuntime runtime) {
         final var transactionExecutor = Executors.newCachedThreadPool();
         runtime.addShutdownHook(() -> {
