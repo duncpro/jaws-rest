@@ -11,14 +11,11 @@ import com.sun.net.httpserver.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
 
@@ -27,14 +24,8 @@ public class LocalJawsServer {
 
     LocalJawsServer(HttpServer httpServer) {
         final var catchAllContext = httpServer.createContext("/");
-        catchAllContext.setHandler(this::onRequest);
+        catchAllContext.setHandler(this::onRequestWithLogging);
     }
-
-    @Inject
-    private Router<JavaMethodRequestHandler> router;
-
-    @Inject
-    private HttpIntegrator httpIntegrator;
 
     private Optional<byte[]> readBody(HttpExchange exchange) {
         byte[] body = null;
@@ -54,22 +45,15 @@ public class LocalJawsServer {
         return ofNullable(body);
     }
 
-    private Map<String, String> parseQueryParams(String s) {
+    protected static Map<String, String> parseQueryParams(String s) {
         final var params = new HashMap<String, String>();
         if (s == null) return params;
 
         final var pairs = s.split("&");
-        String key = null;
-        String value = null;
         for (String item : pairs) {
+            if (item.isBlank()) continue;
             final var pair = item.split("=");
-            if (key == null) key = pair[0];
-            if (value == null) value = pair[1];
-            if (key != null & value != null) {
-                params.put(key, value);
-                key = null;
-                value = null;
-            }
+            params.put(pair[0], pair[1]);
         }
 
         return params;
@@ -89,14 +73,6 @@ public class LocalJawsServer {
     private void onRequest(HttpExchange exchange) {
         final var runtime = new AWSLambdaRuntime(() -> Integer.MAX_VALUE); // No timeout
 
-        // Inject on each request to mirror the behavior of the application when it is running on AWS Lambda
-        Guice.createInjector(
-                new RexIntegrationModule(),
-                new AWSLambdaIntegrationModule(runtime),
-                new MainModule(),
-                new LocalDeploymentModule()
-        ).injectMembers(this);
-
         final var rexRequest = new HttpRequest(
                 exchange.getRequestHeaders(),
                 parseQueryParams(exchange.getRequestURI().getQuery()),
@@ -105,18 +81,21 @@ public class LocalJawsServer {
                 HttpMethod.valueOf(exchange.getRequestMethod())
         );
 
-        SerializedHttpResponse response;
-        try {
-            response = Rex.handleRequest(rexRequest, router, httpIntegrator);
-        } catch (RequestHandlerException e) {
-            logger.error("An unexpected error occurred while servicing a request", e);
-            response = new SerializedHttpResponse(HttpStatus.INTERNAL_SERVER_ERROR.getStatusCode());
-        }
-
-        sendRexResponse(exchange, response);
+        // New injector on each request to mirror the behavior of the application when it is running on AWS Lambda
+        final var requestHandler = Guice.createInjector(new RexIntegrationModule(), new AWSLambdaIntegrationModule(runtime),
+                new MainModule(), new LocalDeploymentModule()).getInstance(LocalJawsServerRootRequestHandler.class);
+        sendRexResponse(exchange, requestHandler.apply(rexRequest));
         exchange.close();
-
         runtime.runShutdownHooks();
+    }
+
+    private void onRequestWithLogging(HttpExchange exchange) {
+        try {
+            onRequest(exchange);
+        } catch (RuntimeException e) {
+            logger.error("An unexpected error occurred inside of LocalJawsServer. This is typically indicative" +
+                    " of a Guice provisioning error. See cause below.", e);
+        }
     }
 
 
