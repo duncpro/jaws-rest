@@ -1,37 +1,38 @@
 import fetch from 'node-fetch';
-
+import {AddPetRequestBody, LookupOwnerResponseBody} from 'dto-interfaces'
 const restApiBaseUrl = process.env.API_URL;
-
 const GENERAL_API_CALL_TIMEOUT = 1000 * 30;
 
-describe('integration tests', () => {
-    test('POST pets', async () => {
-        const response = await fetch(restApiBaseUrl + '/pets', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                petName: 'Cocoa',
-                owner: 'Duncan'
-            })
-        });
+test('POST pets', async () => {
+    // Required Headers
+    const headers = { 'Content-Type': 'application/json' }
 
-        expect(response.status).toEqual(200);
-    }, GENERAL_API_CALL_TIMEOUT);
+    // Required Body
+    const body: AddPetRequestBody = {
+        petName: 'Cocoa',
+        owner: 'Duncan'
+    }
 
-    test('GET pets/*/owner', async () => {
-        const response = await fetch(restApiBaseUrl + '/pets/Cocoa/owner', {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-            },
-        });
+    const response = await fetch(restApiBaseUrl + '/pets',
+        { method: 'POST', headers, body: JSON.stringify(body) });
 
-        expect(response.status).toEqual(200);
-        expect(await response.json()).toEqual({
-            didFindOwner: true,
-            owner: 'Duncan'
-        });
-    }, GENERAL_API_CALL_TIMEOUT);
-});
+    // Expected Response
+    expect(response.status).toEqual(200);
+}, GENERAL_API_CALL_TIMEOUT);
+
+test('GET pets/*/owner', async () => {
+    // Required Headers
+    const headers = { 'Accept': 'application/json' }
+
+    const response = await fetch(restApiBaseUrl + '/pets/Cocoa/owner', { method: 'GET', headers });
+
+    // Expected Response
+    expect(response.status).toEqual(200);
+
+    // Expected Response Body
+    const expectedResponseBody: LookupOwnerResponseBody = {
+        didFindOwner: true,
+        owner: 'Duncan'
+    };
+    expect(await response.json()).toEqual(expectedResponseBody);
+}, GENERAL_API_CALL_TIMEOUT);

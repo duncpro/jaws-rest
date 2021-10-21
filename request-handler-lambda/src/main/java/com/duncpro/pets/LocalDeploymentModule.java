@@ -37,6 +37,7 @@ public class LocalDeploymentModule extends AbstractModule {
 
     @Provides
     @Singleton
+    @StatementExecutor
     public ExecutorService provideStatementExecutor(AWSLambdaRuntime runtime) {
         final var statementExecutor = Executors.newCachedThreadPool();
         runtime.addShutdownHook(() -> {

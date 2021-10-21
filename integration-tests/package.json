@@ -16,5 +16,8 @@
     "jest": "^27.0.6",
     "node-fetch": "^2.6.1",
     "ts-jest": "^27.0.4"
+  },
+  "dependencies": {
+    "dto-interfaces": "file:../request-handler-lambda/build/dto-interfaces"
   }
 }

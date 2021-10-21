@@ -2,21 +2,21 @@ import cz.habarta.typescript.generator.JsonLibrary
 import cz.habarta.typescript.generator.TypeScriptFileType
 import cz.habarta.typescript.generator.TypeScriptOutputKind
 
-plugins {
-    java
-}
+plugins { java }
 
 buildscript {
     repositories {
         mavenCentral()
-        mavenLocal()
     }
     dependencies {
         classpath("cz.habarta.typescript-generator:typescript-generator-gradle-plugin:2.+")
+        classpath("com.fasterxml.jackson.core:jackson-databind:2.12.4")
+        classpath("com.fasterxml.jackson.core:jackson-core:2.12.4")
     }
 }
 
-apply(plugin = "cz.habarta.typescript-generator")
+java.sourceCompatibility = JavaVersion.VERSION_11
+java.targetCompatibility = JavaVersion.VERSION_11
 
 repositories {
     mavenCentral()
@@ -68,25 +68,14 @@ tasks.getByName<Test>("test") {
     useJUnitPlatform()
 }
 
-val generateTypeScript by tasks.getting(cz.habarta.typescript.generator.gradle.GenerateTask::class) {
-    jsonLibrary = JsonLibrary.jackson2
-    outputFileType = TypeScriptFileType.implementationFile
-    outputKind = TypeScriptOutputKind.module
-    classPatterns = listOf("**.dto.*")
-
-    // Apparently the typescript-generator Gradle plugin does not automatically bind the actual output file
-    // to the gradle output file property. Now we can consume from other modules...
-    outputFile = buildDir.resolve("typescript-generator/index.ts").absolutePath
-    outputs.file(outputFile)
+val serve by tasks.registering(JavaExec::class) {
+    classpath = sourceSets.main.get().runtimeClasspath
+    main = "com.duncpro.jaws.LocalJawsServer"
+    standardInput = System.`in`
+    environment("DB_INIT_SCRIPT", rootProject.projectDir.resolve("setup-database.sql"));
 }
 
-val generateDtoInterfaces by tasks.registering {
-    dependsOn(generateTypeScript)
-    outputs.files(generateTypeScript.outputs)
-}
-
-val dtoInterfaces: Configuration by configurations.creating
-artifacts.add(dtoInterfaces.name, generateDtoInterfaces)
+// AWS Lambda Build
 
 // Create an artifact which can be executed by the AWS Lambda platform.
 // This artifact is consumed by jaws-rest/aws-cloud-app.
@@ -102,12 +91,47 @@ val buildLambdaPackage by tasks.registering(Zip::class) {
 val lambdaPackage: Configuration by configurations.creating;
 artifacts.add(lambdaPackage.name, buildLambdaPackage)
 
-val serve by tasks.registering(JavaExec::class) {
-    classpath = sourceSets.main.get().runtimeClasspath
-    main = "com.duncpro.jaws.LocalJawsServer"
-    standardInput = System.`in`
-    environment("DB_INIT_SCRIPT", rootProject.projectDir.resolve("setup-database.sql"));
+// Type Script Support
+
+apply(plugin = "cz.habarta.typescript-generator")
+
+val generateTypeScript by tasks.getting(cz.habarta.typescript.generator.gradle.GenerateTask::class) {
+    jsonLibrary = JsonLibrary.jackson2
+    outputFileType = TypeScriptFileType.implementationFile
+    outputKind = TypeScriptOutputKind.module
+    classPatterns = listOf("**.dto.*")
+
+    // Apparently the typescript-generator Gradle plugin does not automatically bind the actual output file
+    // to the gradle output file property. Now we can consume from other modules...
+    outputFile = buildDir.resolve("typescript-generator/index.ts").absolutePath
+    outputs.file(outputFile)
 }
 
-java.sourceCompatibility = JavaVersion.VERSION_11
-java.targetCompatibility = JavaVersion.VERSION_11
+@OptIn(ExperimentalStdlibApi::class)
+val buildDtoInterfacesModule by tasks.registering {
+    dependsOn(generateTypeScript)
+
+    doLast {
+        copy {
+            from(generateTypeScript.outputs)
+            into(buildDir.resolve("dto-interfaces"))
+        }
+    }
+
+    // Generate package.json
+    doLast {
+        val packageJsonFile = buildDir.resolve("dto-interfaces/package.json")
+        packageJsonFile.parentFile.mkdirs()
+        packageJsonFile.createNewFile()
+        val packageJsonContents = buildMap<String, Any> {
+            put("name", "dto-interfaces")
+            put("private", true)
+        }
+        com.fasterxml.jackson.databind.ObjectMapper().writeValue(packageJsonFile, packageJsonContents)
+    }
+
+    outputs.dir(buildDir.resolve("dto-interfaces"))
+}
+
+val dtoInterfacesNodeModule: Configuration by configurations.creating
+artifacts.add(dtoInterfacesNodeModule.name, buildDtoInterfacesModule)
