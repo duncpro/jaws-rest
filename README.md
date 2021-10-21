@@ -6,10 +6,8 @@ until the user-base grows significantly. By leveraging technologies
 such as **RDS Aurora Serverless**, **AWS API Gateway**, and **AWS Lambda**, JAWS applications have a hosting cost
 that is proportional to the amount of API calls which are being made. Another
 advantage to using a serverless architecture is that your application can effectively scale to any size in a very
-short amount of time without any human intervention. The aforementioned features make serverless ideal for startup projects.
-
-Since JAWS uses [Rex](https://github.com/duncpro/Rex) for request handling and [Jackal](https://github.com/duncpro/Jackal)
-for database interaction, migrating a JAWS application to serverful architecture is as simple as swapping in a
+short amount of time without any human intervention. The aforementioned features make serverless ideal for startup projects. 
+With that being said, migrating a JAWS application to serverful architecture is as simple as swapping in a
 new Guice module. In fact, JAWS applications can be run 100% locally right out of the box using the gradle `serve` task.
 
 
@@ -31,18 +29,22 @@ are not completely free to host if you use the  relational-database.
 - [Jackal](https://github.com/duncpro/Jackal) for making SQL queries.
 - [H2](https://github.com/h2database/h2database) for local database testing.
 - [typescript-generator](https://github.com/vojtechhabarta/typescript-generator) for generating TypeScript interfaces
-from [Jackson](https://github.com/FasterXML/jackson) POJOs.
+from Jackson POJOs.
+- [Jest](https://github.com/facebook/jest) for integration testing API endpoints.  
 
 ## Features
 - Deploy to AWS and run integration tests with a single Gradle task`:integration-tests:run`
 - Full support for offline local development. Just use the gradle task `serve` to run the dev server and
-  `:integration-tests:runLocal` to run your tests against that server.
+  `:integration-tests:runIntegrationTestsLocally` to run your tests against that server.
 - Automatic discovery of request handler methods when their classes are bound
 as Guice singletons and annotated with `@RestApi`.
 - Other useful Gradle tasks like `deploy` and `destroy` which make interacting
 with AWS CDK a breeze.
 - Preconfigured RDS Aurora Serverless database.
 - Run code before the Lambda exits using injectable shutdown hook utility.
+- Automatically generated TypeScript equivalent for all DTOs. A DTO is any POJO declared within
+a package matching the glob `"**.dto.*"`. See the integration test suite for example usage
+  of automatically generated DTOs.
 
 
 ## Getting Started
@@ -63,13 +65,13 @@ and an integration test for that endpoint.
 The integration test suite can be run locally and against the AWS cloud deployment.
 To run locally use the following command...
 ```bash
-gradle :integration-test:runLocal
+gradle :integration-test:runIntegrationTestsLocally
 ```
 ### Deploy to AWS & Run Integration Tests
 This task will build your application, deploy it to AWS, and then run the integration test suite
 against it.
 ```bash
-gradle :integration-test:run
+gradle :integration-test:runIntegrationTests
 ```
 If you've never used AWS CDK before you will need to install it and run `cdk boostrap` before this step.
 ### Add Another Endpoint

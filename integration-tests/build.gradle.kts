@@ -19,23 +19,32 @@ dependencies {
     dtoInterfacesNodeModule(project(":request-handler-lambda", "dtoInterfacesNodeModule"))
 }
 
-val runLocal by tasks.registering {
-    dependsOn(installDtoInterfaces)
-    doLast {
-        exec {
-            environment("API_URL", "http://localhost:8000")
-            commandLine("npm", "test")
-        }
-    }
+// Tasks
+
+val runIntegrationTestsLocally by tasks.registering {
+    runIntegrationTests("http://localhost:8000")
 }
 
-val run by tasks.registering {
+val runIntegrationTests by tasks.registering {
     dependsOn(cfnOutputs)
     dependsOn(tasks.findByPath(":deploy"))
     dependsOn(installDtoInterfaces)
+    runIntegrationTests(readDeployedApiUrl(cfnOutputs.singleFile.absolutePath))
+}
+
+val npm = "${project.ext["NODE_HOME"]}/npm"
+val installDtoInterfaces by tasks.registering(Exec::class) {
+    dependsOn(dtoInterfacesNodeModule)
+    commandLine(npm, "install", dtoInterfacesNodeModule.asPath)
+}
+
+// Helpers
+
+fun Task.runIntegrationTests(againstApiUrl: String) {
+    dependsOn(installDtoInterfaces)
     doLast {
         exec {
-            environment("API_URL", readDeployedApiUrl(cfnOutputs.singleFile.absolutePath))
+            environment("API_URL", againstApiUrl)
             commandLine("npm", "test")
         }
     }
@@ -44,10 +53,4 @@ val run by tasks.registering {
 fun readDeployedApiUrl(cdkOutputsPath: String): String {
     val outputs = ObjectMapper().readTree(File(cdkOutputsPath))
     return outputs["MainStack"]["MainRestApiUrl"].textValue();
-}
-
-val npm = "${project.ext["NODE_HOME"]}/npm"
-val installDtoInterfaces by tasks.registering(Exec::class) {
-    dependsOn(dtoInterfacesNodeModule)
-    commandLine(npm, "install", dtoInterfacesNodeModule.asPath)
 }
