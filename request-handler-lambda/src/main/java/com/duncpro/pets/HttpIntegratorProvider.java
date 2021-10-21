@@ -10,6 +10,9 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
 
+/**
+ * Provides a Rex {@link HttpIntegrator} capable of serializing and deserializing JSON request and response bodies.
+ */
 public class HttpIntegratorProvider implements Provider<HttpIntegrator> {
     private final ObjectMapper jackson;
 
@@ -29,7 +32,6 @@ public class HttpIntegratorProvider implements Provider<HttpIntegrator> {
                 throw new ConversionException(e);
             }
         });
-
         basicIntegrator.registerResponseBodyType("application/json", obj -> {
             try {
                 return jackson.writeValueAsString(obj).getBytes();

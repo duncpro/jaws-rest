@@ -8,6 +8,9 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.util.function.Function;
 
+/**
+ * Class responsible for delegating all incoming requests to their dedicated handler functions.
+ */
 public class RootRequestHandler implements Function<HttpRequest, SerializedHttpResponse> {
     private final Router<JavaMethodRequestHandler> router;
     private final HttpIntegrator httpIntegrator;

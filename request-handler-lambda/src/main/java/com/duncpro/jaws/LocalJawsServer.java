@@ -18,6 +18,10 @@ import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 
+/**
+ * Executable class which binds the JAWS application to a local {@link HttpServer}.
+ * This class is provided as a means for local development and integration testing.
+ */
 public class LocalJawsServer {
     private static final Logger logger = LoggerFactory.getLogger(LocalJawsServer.class);
 

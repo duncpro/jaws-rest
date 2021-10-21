@@ -35,6 +35,11 @@ public class LocalDeploymentModule extends AbstractModule {
     @Retention(RetentionPolicy.RUNTIME)
     public @interface StatementExecutor {}
 
+    /**
+     * The AWS Aurora Data API is unavailable when running the application locally. Therefore JDBC in conjunction
+     * with a local database is used instead. Unfortunately JDBC does not support CompletableFuture. To bridge
+     * the gap caused by lack of async query support inside of JDBC a cached thread pool is used.
+     */
     @Provides
     @Singleton
     @StatementExecutor
@@ -52,6 +57,9 @@ public class LocalDeploymentModule extends AbstractModule {
         return statementExecutor;
     }
 
+    /**
+     * When running the application locally, a local in-memory database will be used instead of Amazon RDS.
+     */
     @Provides
     @Singleton
     public RelationalDatabase provideRelationalDatabase(AWSLambdaRuntime runtime,

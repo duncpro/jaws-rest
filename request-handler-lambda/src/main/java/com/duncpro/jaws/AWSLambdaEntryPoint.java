@@ -21,7 +21,8 @@ import java.util.Optional;
 @SuppressWarnings("unused")
 public class AWSLambdaEntryPoint extends LNTRequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     @Override
-    public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent apiGatewayRequest, Context context, AWSLambdaRuntime runtime) {
+    public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent apiGatewayRequest, Context context,
+                                                      AWSLambdaRuntime runtime) {
         return Guice.createInjector(new AWSLambdaIntegrationModule(runtime), new RexIntegrationModule(), new MainModule(),
                 new RemoteDeploymentModule())
                 .getInstance(RootRequestHandler.class)
@@ -30,6 +31,9 @@ public class AWSLambdaEntryPoint extends LNTRequestHandler<APIGatewayProxyReques
                 .apply(apiGatewayRequest);
     }
 
+    /**
+     * Converts an external AWS API Gateway Request into an internal {@link Rex} {@link HttpRequest}.
+     */
     private HttpRequest convertRequest(APIGatewayProxyRequestEvent apiGatewayRequest) {
         return new HttpRequest(
                 apiGatewayRequest.getMultiValueHeaders(),
@@ -42,6 +46,9 @@ public class AWSLambdaEntryPoint extends LNTRequestHandler<APIGatewayProxyReques
         );
     }
 
+    /**
+     * Converts an internal {@link Rex} {@link HttpResponse} into an external AWS API Gateway Response.
+     */
     private APIGatewayProxyResponseEvent convertResponse(SerializedHttpResponse rexResponse) {
         final var apiGatewayResponse = new APIGatewayProxyResponseEvent();
 

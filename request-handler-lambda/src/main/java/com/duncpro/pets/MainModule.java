@@ -8,14 +8,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MainModule extends AbstractModule {
-    private static final Logger logger = LoggerFactory.getLogger(MainModule.class);
-
     @Override
     public void configure() {
         bind(ObjectMapper.class).toInstance(new ObjectMapper());
         bind(HttpIntegrator.class).toProvider(HttpIntegratorProvider.class);
 
         // Features
+        // For every new feature consider creating a new Guice module and installing it here.
         install(new PetDirectoryModule());
     }
 }

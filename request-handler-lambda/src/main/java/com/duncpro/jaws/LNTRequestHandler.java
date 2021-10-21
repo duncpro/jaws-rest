@@ -3,6 +3,9 @@ package com.duncpro.jaws;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 
+/**
+ * Implementation of {@link RequestHandler} which provides a shutdown-hook mechanism to its subclasses.
+ */
 public abstract class LNTRequestHandler<I, O> implements RequestHandler<I, O> {
     @Override
     public final O handleRequest(I input, Context context) {
