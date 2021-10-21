@@ -5,6 +5,7 @@ import com.duncpro.jackal.RelationalDatabaseException;
 import com.duncpro.jackal.jdbc.DataSourceWrapper;
 import com.duncpro.jaws.AWSLambdaRuntime;
 import com.google.inject.AbstractModule;
+import com.google.inject.BindingAnnotation;
 import com.google.inject.Provides;
 import org.h2.jdbcx.JdbcDataSource;
 import org.h2.tools.RunScript;
@@ -13,6 +14,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
 import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.SQLException;
@@ -28,9 +31,12 @@ import java.util.concurrent.TimeUnit;
 public class LocalDeploymentModule extends AbstractModule {
     private static final Logger logger = LoggerFactory.getLogger(LocalDeploymentModule.class);
 
+    @BindingAnnotation
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface StatementExecutor {}
+
     @Provides
     @Singleton
-    @StatementExecutor
     public ExecutorService provideStatementExecutor(AWSLambdaRuntime runtime) {
         final var statementExecutor = Executors.newCachedThreadPool();
         runtime.addShutdownHook(() -> {

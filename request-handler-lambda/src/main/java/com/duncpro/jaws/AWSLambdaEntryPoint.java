@@ -25,8 +25,9 @@ public class AWSLambdaEntryPoint extends LNTRequestHandler<APIGatewayProxyReques
         return Guice.createInjector(new AWSLambdaIntegrationModule(runtime), new RexIntegrationModule(), new MainModule(),
                 new RemoteDeploymentModule())
                 .getInstance(RootRequestHandler.class)
+                .compose(this::convertRequest)
                 .andThen(this::convertResponse)
-                .apply(convertRequest(apiGatewayRequest));
+                .apply(apiGatewayRequest);
     }
 
     private HttpRequest convertRequest(APIGatewayProxyRequestEvent apiGatewayRequest) {
