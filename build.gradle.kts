@@ -1,8 +1,6 @@
-import com.duncpro.jackal.rds.AmazonDataAPIDatabase
+
 import com.fasterxml.jackson.databind.ObjectMapper
-import software.amazon.awssdk.services.rdsdata.RdsDataAsyncClient
 import java.nio.file.Files.*
-import java.util.concurrent.Executors
 
 buildscript {
     repositories {
@@ -17,7 +15,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.duncpro:jackal:1.0-SNAPSHOT-3")
+        classpath("com.duncpro:jackal:1.0-SNAPSHOT-10")
         classpath(platform("software.amazon.awssdk:bom:2.15.0"))
         classpath("software.amazon.awssdk:rdsdata")
         classpath("com.fasterxml.jackson.core:jackson-databind:2.12.4")
@@ -42,20 +40,12 @@ val initRemoteDatabase by tasks.registering {
         val dbArn = cfnOutputsContent["MainStack"]["MasterDbArn"].textValue()
         val dbSecretArn = cfnOutputsContent["MainStack"]["MasterDbSecretArn"].textValue()
         val dbInitFile = rootProject.projectDir.resolve("setup-database.sql").toPath();
-        val transactionExecutor = Executors.newSingleThreadExecutor()
-        val rdsClient = RdsDataAsyncClient.create()
-        val db = AmazonDataAPIDatabase(rdsClient, dbArn, dbSecretArn, transactionExecutor)
+        val db = com.duncpro.jackal.aws.DefaultAuroraServerlessRelationalDatabase(dbArn, dbSecretArn)
 
-        db.commitTransaction { th ->
-            for (statement in readAllLines(dbInitFile).joinToString("").split(";")) {
-                if (statement.isBlank()) continue
-                th.prepareStatement(statement).executeUpdate().join()
-            }
-        }.join()
-
-
-        transactionExecutor.shutdown()
-        rdsClient.close()
+        for (statement in readAllLines(dbInitFile).joinToString("").split(";")) {
+            if (statement.isBlank()) continue
+            db.prepareStatement(statement).executeUpdate()
+        }
     }
 
     outputs.upToDateWhen { false }
