@@ -47,7 +47,7 @@ val initRemoteDatabase by tasks.registering {
         val db = AmazonDataAPIDatabase(rdsClient, dbArn, dbSecretArn, transactionExecutor)
 
         db.commitTransaction { th ->
-            for (statement in java.nio.file.Files.readAllLines(dbInitFile).joinToString("").split(";")) {
+            for (statement in readAllLines(dbInitFile).joinToString("").split(";")) {
                 if (statement.isBlank()) continue
                 th.prepareStatement(statement).executeUpdate().join()
             }
