@@ -1,8 +1,6 @@
 package com.duncpro.jaws;
 
 import com.amazonaws.services.lambda.runtime.Context;
-import com.duncpro.jaws.AWSLambdaIntegrationModule;
-import com.duncpro.jaws.AWSLambdaRuntime;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Provides;

@@ -8,12 +8,12 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.util.function.Function;
 
-public class LocalJawsServerRootRequestHandler implements Function<HttpRequest, SerializedHttpResponse> {
+public class RootRequestHandler implements Function<HttpRequest, SerializedHttpResponse> {
     private final Router<JavaMethodRequestHandler> router;
     private final HttpIntegrator httpIntegrator;
 
     @Inject
-    public LocalJawsServerRootRequestHandler(Router<JavaMethodRequestHandler> router, HttpIntegrator httpIntegrator) {
+    public RootRequestHandler(Router<JavaMethodRequestHandler> router, HttpIntegrator httpIntegrator) {
         this.router = router;
         this.httpIntegrator = httpIntegrator;
     }
@@ -29,5 +29,5 @@ public class LocalJawsServerRootRequestHandler implements Function<HttpRequest, 
         }
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(LocalJawsServerRootRequestHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(RootRequestHandler.class);
 }

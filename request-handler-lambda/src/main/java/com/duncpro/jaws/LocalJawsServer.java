@@ -2,7 +2,6 @@ package com.duncpro.jaws;
 
 import com.duncpro.jroute.HttpMethod;
 import com.duncpro.jroute.Path;
-import com.duncpro.jroute.router.Router;
 import com.duncpro.pets.LocalDeploymentModule;
 import com.duncpro.pets.MainModule;
 import com.duncpro.rex.*;
@@ -83,7 +82,7 @@ public class LocalJawsServer {
 
         // New injector on each request to mirror the behavior of the application when it is running on AWS Lambda
         final var requestHandler = Guice.createInjector(new RexIntegrationModule(), new AWSLambdaIntegrationModule(runtime),
-                new MainModule(), new LocalDeploymentModule()).getInstance(LocalJawsServerRootRequestHandler.class);
+                new MainModule(), new LocalDeploymentModule()).getInstance(RootRequestHandler.class);
         sendRexResponse(exchange, requestHandler.apply(rexRequest));
         exchange.close();
         runtime.runShutdownHooks();

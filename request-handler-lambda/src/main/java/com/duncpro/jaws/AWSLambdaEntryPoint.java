@@ -18,25 +18,15 @@ import java.util.Optional;
  * An instance of this class is instantiated by AWS upon cold start of a new AWS Lambda VM.
  * If you move this class make sure to update the AWS CDK script as well.
  */
+@SuppressWarnings("unused")
 public class AWSLambdaEntryPoint extends LNTRequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
-    @Inject
-    private Router<JavaMethodRequestHandler> router;
-
-    @Inject
-    private HttpIntegrator httpIntegrator;
-
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent apiGatewayRequest, Context context, AWSLambdaRuntime runtime) {
-        Guice.createInjector(
-                new AWSLambdaIntegrationModule(runtime),
-                new RexIntegrationModule(),
-                new MainModule(),
-                new RemoteDeploymentModule()
-        ).injectMembers(this);
-
-        final var rexResponse = Rex.handleRequest(convertRequest(apiGatewayRequest), router, httpIntegrator);
-
-        return convertResponse(rexResponse);
+        return Guice.createInjector(new AWSLambdaIntegrationModule(runtime), new RexIntegrationModule(), new MainModule(),
+                new RemoteDeploymentModule())
+                .getInstance(RootRequestHandler.class)
+                .andThen(this::convertResponse)
+                .apply(convertRequest(apiGatewayRequest));
     }
 
     private HttpRequest convertRequest(APIGatewayProxyRequestEvent apiGatewayRequest) {
