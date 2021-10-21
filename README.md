@@ -1,5 +1,5 @@
-# JAWS-REST-React
-Boilerplate Gradle project for developing serverless RESTful Web apps on AWS using Java.
+# JAWS-REST
+Boilerplate Gradle project for developing serverless RESTful APIs on AWS using Java.
 
 The primary motivation behind JAWS is to provide a platform for developing REST APIs which have minimal hosting cost,
 until the user-base grows significantly. By leveraging technologies
@@ -30,7 +30,6 @@ are not completely free to host if you use the  relational-database.
 - [Slf4j](https://github.com/qos-ch/slf4j) and [Log4j2](https://logging.apache.org/log4j/2.x/) for logging.
 - [Jackal](https://github.com/duncpro/Jackal) for making SQL queries.
 - [H2](https://github.com/h2database/h2database) for local database testing.
-- [React](https://reactjs.org/) for frontend user-interface
 - [typescript-generator](https://github.com/vojtechhabarta/typescript-generator) for generating TypeScript interfaces
 from [Jackson](https://github.com/FasterXML/jackson) POJOs.
 
