@@ -33,7 +33,7 @@ from Jackson POJOs.
 - [Jest](https://github.com/facebook/jest) for integration testing API endpoints.  
 
 ## Features
-- Deploy to AWS and run integration tests with a single Gradle task`:integration-tests:run`
+- Deploy to AWS and run integration tests with a single Gradle task`:integration-tests:runIntegrationTests`
 - Full support for offline local development. Just use the gradle task `serve` to run the dev server and
   `:integration-tests:runIntegrationTestsLocally` to run your tests against that server.
 - Automatic discovery of request handler methods when their classes are bound
