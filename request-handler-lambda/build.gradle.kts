@@ -76,11 +76,17 @@ val generateTypeScript by tasks.getting(cz.habarta.typescript.generator.gradle.G
 
     // Apparently the typescript-generator Gradle plugin does not automatically bind the actual output file
     // to the gradle output file property. Now we can consume from other modules...
-    outputFile = buildDir.resolve("typescript-generator/output.ts").absolutePath
+    outputFile = buildDir.resolve("typescript-generator/index.ts").absolutePath
     outputs.file(outputFile)
 }
+
+val generateDtoInterfaces by tasks.registering {
+    dependsOn(generateTypeScript)
+    outputs.files(generateTypeScript.outputs)
+}
+
 val dtoInterfaces: Configuration by configurations.creating
-artifacts.add(dtoInterfaces.name, generateTypeScript.outputs.files.singleFile)
+artifacts.add(dtoInterfaces.name, generateDtoInterfaces)
 
 // Create an artifact which can be executed by the AWS Lambda platform.
 // This artifact is consumed by jaws-rest/aws-cloud-app.
