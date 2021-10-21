@@ -23,32 +23,10 @@ public class MainModule extends AbstractModule {
     @Override
     public void configure() {
         bind(ObjectMapper.class).toInstance(new ObjectMapper());
+        bind(HttpIntegrator.class).toProvider(HttpIntegratorProvider.class);
 
         // Features
         install(new PetDirectoryModule());
-    }
-
-    @Provides
-    public HttpIntegrator provideHttpIntegrator(ObjectMapper jackson) {
-        final var basicIntegrator = new BasicHttpIntegratorBuilder();
-        JavaHttpIntegrations.addAll(basicIntegrator);
-
-        basicIntegrator.registerRequestBodyType("application/json", (type, raw) -> {
-            try {
-                return jackson.readValue(raw, type);
-            } catch (IOException e) {
-                throw new ConversionException(e);
-            }
-        });
-
-        basicIntegrator.registerResponseBodyType("application/json", obj -> {
-            try {
-                return jackson.writeValueAsString(obj).getBytes();
-            } catch (IOException e) {
-                throw new ConversionException(e);
-            }
-        });
-        return basicIntegrator.build();
     }
 
     @Provides
