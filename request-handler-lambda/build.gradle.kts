@@ -1,6 +1,22 @@
+import cz.habarta.typescript.generator.JsonLibrary
+import cz.habarta.typescript.generator.TypeScriptFileType
+import cz.habarta.typescript.generator.TypeScriptOutputKind
+
 plugins {
     java
 }
+
+buildscript {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+    dependencies {
+        classpath("cz.habarta.typescript-generator:typescript-generator-gradle-plugin:2.+")
+    }
+}
+
+apply(plugin = "cz.habarta.typescript-generator")
 
 repositories {
     mavenCentral()
@@ -50,6 +66,13 @@ dependencies {
 
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
+}
+
+val generateTypeScript by tasks.getting(cz.habarta.typescript.generator.gradle.GenerateTask::class) {
+    jsonLibrary = JsonLibrary.jackson2
+    outputFileType = TypeScriptFileType.implementationFile
+    outputKind = TypeScriptOutputKind.module
+    classPatterns = listOf("**.dto.*")
 }
 
 // Create an artifact which can be executed by the AWS Lambda platform.

@@ -1,4 +1,4 @@
-package com.duncpro.pets.directory;
+package com.duncpro.pets.directory.dto;
 
 public class LookupOwnerResponseBody {
     public String owner;
