@@ -3,12 +3,13 @@ package com.duncpro.pets.directory;
 import com.duncpro.jackal.RelationalDatabaseException;
 import com.duncpro.jaws.RestApi;
 import com.duncpro.jroute.HttpMethod;
+import com.duncpro.pets.directory.dto.AddPetRequestBody;
+import com.duncpro.pets.directory.dto.LookupOwnerResponseBody;
 import com.duncpro.rex.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.io.IOException;
 
 @RestApi
 @HttpResource(route = "/pets")
