@@ -54,7 +54,3 @@ val deploy by tasks.registering {
     dependsOn(initRemoteDatabase)
     // Transitive dependency on: deployCdkStack
 }
-
-subprojects {
-    ext["NODE_HOME"] = System.getProperty("user.home") + "/.nvm/versions/node/v14.17.4/bin"
-}

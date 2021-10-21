@@ -10,13 +10,6 @@ short amount of time without any human intervention. The aforementioned features
 With that being said, migrating a JAWS application to serverful architecture is as simple as swapping in a
 new Guice module. In fact, JAWS applications can be run 100% locally right out of the box using the gradle `serve` task.
 
-
-## Caveats
-- Streaming HTTP requests/responses is not supported and is currently outside the scope of this project. JAWS is ideal 
-REST applications which deal in discrete payloads such as JSON objects.
-- Unlike API Gateway and Lambda, RDS Aurora Serverless is not eligible for AWS free-tier. This means that JAWS applications
-are not completely free to host if you use the  relational-database.
-
 ## What's Included
 - [Gradle](https://github.com/gradle/gradle) for task automation.
 - [AWS CDK](https://aws.amazon.com/cdk/) for cloud deployment.
@@ -46,6 +39,17 @@ with AWS CDK a breeze.
 a package matching the glob `"**.dto.*"`. See the integration test suite for example usage
   of automatically generated DTOs.
 
+## Caveats
+- Streaming HTTP requests/responses is not supported and is currently outside the scope of this project. JAWS is ideal
+  REST applications which deal in discrete payloads such as JSON objects.
+- Unlike API Gateway and Lambda, RDS Aurora Serverless is not eligible for AWS free-tier. This means that JAWS applications
+  are not completely free to host if you use the  relational-database.
+
+## Dependencies
+The following software must be pre-installed on the system in order to use this template.
+- Node.js
+- AWS CDK
+- JDK 8
 
 ## Getting Started
 To get started simply clone the repository...

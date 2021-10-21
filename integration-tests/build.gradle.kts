@@ -32,10 +32,9 @@ val runIntegrationTests by tasks.registering {
     runIntegrationTests(readDeployedApiUrl(cfnOutputs.singleFile.absolutePath))
 }
 
-val npm = "${project.ext["NODE_HOME"]}/npm"
 val installDtoInterfaces by tasks.registering(Exec::class) {
     dependsOn(dtoInterfacesNodeModule)
-    commandLine(npm, "install", dtoInterfacesNodeModule.asPath)
+    commandLine("npm", "install", dtoInterfacesNodeModule.asPath)
 }
 
 // Helpers
