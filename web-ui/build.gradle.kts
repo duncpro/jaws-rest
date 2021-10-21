@@ -1,5 +1,11 @@
 import com.fasterxml.jackson.databind.ObjectMapper
 
+val nodeToolsRoot = System.getProperty("user.home") + "/.nvm/versions/node/v14.17.4/bin"
+val npm = "$nodeToolsRoot/npm"
+val npx = "$nodeToolsRoot/npx"
+
+buildDir = file("gradleBuild")
+
 buildscript {
     dependencies {
         classpath("com.fasterxml.jackson.core:jackson-databind:2.12.4")
@@ -37,4 +43,16 @@ val buildDtoInterfacesModule by tasks.registering {
         }
         ObjectMapper().writeValue(packageJsonFile, packageJsonContents)
     }
+
+    outputs.dir(buildDir.resolve("dto-interfaces"))
+}
+
+val installDtoInterfaces by tasks.registering(Exec::class) {
+    dependsOn(buildDtoInterfacesModule)
+    commandLine(npm, "install", buildDtoInterfacesModule.get().outputs.files.asPath)
+}
+
+val buildWebUiForProduction by tasks.registering(Exec::class) {
+    dependsOn(installDtoInterfaces)
+    commandLine(npm, "run", "build")
 }
