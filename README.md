@@ -1,5 +1,5 @@
-# JAWS-REST
-Boilerplate Gradle project for developing serverless RESTful API's on AWS using Java.
+# JAWS-REST-React
+Boilerplate Gradle project for developing serverless RESTful Web apps on AWS using Java.
 
 The primary motivation behind JAWS is to provide a platform for developing REST APIs which have minimal hosting cost,
 until the user-base grows significantly. By leveraging technologies
@@ -21,7 +21,7 @@ are not completely free to host if you use the  relational-database.
 
 ## What's Included
 - [Gradle](https://github.com/gradle/gradle) for task automation.
-- [AWS CDK](https://aws.amazon.com/cdk/) for deployment.
+- [AWS CDK](https://aws.amazon.com/cdk/) for cloud deployment.
 - [Guice](https://github.com/google/guice) for dependency injection.
 - [Rex](https://github.com/duncpro/Rex) for REST endpoints.
 - [JRoute](https://github.com/duncpro/JRoute) for URL routing.
@@ -30,6 +30,9 @@ are not completely free to host if you use the  relational-database.
 - [Slf4j](https://github.com/qos-ch/slf4j) and [Log4j2](https://logging.apache.org/log4j/2.x/) for logging.
 - [Jackal](https://github.com/duncpro/Jackal) for making SQL queries.
 - [H2](https://github.com/h2database/h2database) for local database testing.
+- [React](https://reactjs.org/) for frontend user-interface
+- [typescript-generator](https://github.com/vojtechhabarta/typescript-generator) for generating TypeScript interfaces
+from [Jackson](https://github.com/FasterXML/jackson) POJOs.
 
 ## Features
 - Deploy to AWS and run integration tests with a single Gradle task`:integration-tests:run`
