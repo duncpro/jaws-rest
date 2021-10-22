@@ -39,7 +39,7 @@ dependencies {
     implementation("software.amazon.awssdk:rdsdata")
 
     implementation("com.duncpro:jroute:1.0-SNAPSHOT-2")
-    implementation("com.duncpro:jackal:1.0-SNAPSHOT-10")
+    implementation("com.duncpro:jackal:1.0-SNAPSHOT-11")
     implementation("com.duncpro:rex:1.0-SNAPSHOT-7")
 
     // Logging

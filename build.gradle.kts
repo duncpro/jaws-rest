@@ -15,7 +15,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.duncpro:jackal:1.0-SNAPSHOT-10")
+        classpath("com.duncpro:jackal:1.0-SNAPSHOT-11")
         classpath(platform("software.amazon.awssdk:bom:2.15.0"))
         classpath("software.amazon.awssdk:rdsdata")
         classpath("com.fasterxml.jackson.core:jackson-databind:2.12.4")
