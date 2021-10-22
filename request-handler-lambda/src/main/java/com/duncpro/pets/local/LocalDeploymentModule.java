@@ -4,6 +4,7 @@ import com.duncpro.jackal.RelationalDatabase;
 import com.duncpro.jackal.RelationalDatabaseException;
 import com.duncpro.jackal.jdbc.DataSourceWrapper;
 import com.duncpro.jaws.AWSLambdaRuntime;
+import com.duncpro.jaws.ShutdownHookPriority;
 import com.duncpro.pets.MainModule;
 import com.google.inject.AbstractModule;
 import com.google.inject.BindingAnnotation;
@@ -55,7 +56,7 @@ public class LocalDeploymentModule extends AbstractModule {
                 logger.warn("One or more database operations might not have been completed because the shutdown hook" +
                         " which was awaiting their completion has been interrupted.", e);
             }
-        });
+        }, ShutdownHookPriority.LATE);
         return statementExecutor;
     }
 }

@@ -4,6 +4,7 @@ import com.duncpro.jackal.RelationalDatabase;
 import com.duncpro.jackal.RelationalDatabaseException;
 import com.duncpro.jackal.jdbc.DataSourceWrapper;
 import com.duncpro.jaws.AWSLambdaRuntime;
+import com.duncpro.jaws.ShutdownHookPriority;
 import org.h2.jdbcx.JdbcDataSource;
 import org.h2.tools.RunScript;
 import org.slf4j.Logger;
@@ -54,7 +55,7 @@ public class LocalRelationalDatabaseProvider implements Provider<RelationalDatab
             } catch (RelationalDatabaseException e) {
                 logger.error("Error occurred while shutting down the local H2 database.", e);
             }
-        });
+        }, ShutdownHookPriority.EARLY);
         return db;
     }
 
