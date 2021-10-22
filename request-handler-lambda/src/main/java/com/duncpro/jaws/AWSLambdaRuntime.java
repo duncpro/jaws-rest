@@ -6,9 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -17,7 +15,8 @@ import java.util.stream.Stream;
  * This object is created when the invocation begins and is released after the invocation finishes.
  */
 public class AWSLambdaRuntime {
-    private final Queue<Runnable> shutdownHooks = new ConcurrentLinkedQueue<>();
+    private final Queue<Runnable> earlyShutdownHooks = new ConcurrentLinkedQueue<>();
+    private final Queue<Runnable> lateShutdownHooks = new ConcurrentLinkedQueue<>();
     private final Supplier<Integer> remainingTime;
 
     public AWSLambdaRuntime(Supplier<Integer> remainingTime) {
@@ -39,7 +38,30 @@ public class AWSLambdaRuntime {
      * {@link LNTRequestHandler#handleRequest(Object, Context, AWSLambdaRuntime)} finishes executing.
      */
     public void addShutdownHook(Runnable run) {
-        shutdownHooks.add(run);
+        addShutdownHook(run, ShutdownHookPriority.EARLY);
+    }
+
+    public void addShutdownHook(Runnable run, ShutdownHookPriority priority) {
+        switch (priority) {
+            case EARLY:
+                earlyShutdownHooks.add(run);
+                break;
+            case LATE:
+                lateShutdownHooks.add(run);
+                break;
+        }
+    }
+
+    private void runShutdownHooksOrdered(ExecutorService executor) {
+        Stream.generate(earlyShutdownHooks::poll)
+                .takeWhile(Objects::nonNull)
+                .map(hook -> CompletableFuture.runAsync(hook, executor))
+                .forEach(CompletableFuture::join);
+
+        Stream.generate(lateShutdownHooks::poll)
+                .takeWhile(Objects::nonNull)
+                .map(hook -> CompletableFuture.runAsync(hook, executor))
+                .forEach(CompletableFuture::join);
     }
 
     /**
@@ -47,17 +69,17 @@ public class AWSLambdaRuntime {
      * hooks have completed.
      */
     public void runShutdownHooks() {
-        final var executor = Executors.newCachedThreadPool();
+        // This executor will run until all hooks have finished
+        ExecutorService masterExecutor = Executors.newSingleThreadExecutor();
 
-        Stream.generate(shutdownHooks::poll)
-                .takeWhile(Objects::nonNull)
-                .forEach(executor::submit);
+        ExecutorService hookExecutor = Executors.newCachedThreadPool();
+        masterExecutor.submit(() -> runShutdownHooksOrdered(hookExecutor));
+        masterExecutor.shutdown();
 
-        executor.shutdown();
 
         boolean didFinishExecuting = false;
         try {
-            didFinishExecuting = executor.awaitTermination(remainingTime.get().longValue(),
+            didFinishExecuting = masterExecutor.awaitTermination(remainingTime.get().longValue(),
                             TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             logger.error("The main thread was interrupted during the shutdown procedure." +
@@ -65,6 +87,7 @@ public class AWSLambdaRuntime {
         }
 
         if (!didFinishExecuting) {
+            hookExecutor.shutdownNow();
             logger.error("One or more shutdown tasks did not finish executing before the Lambda function timed out." +
                     " Consider increasing the timeout duration of the function inside of the CDK script.");
         }
