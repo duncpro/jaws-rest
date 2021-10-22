@@ -3,6 +3,7 @@ package com.duncpro.pets;
 import com.duncpro.jackal.RelationalDatabase;
 import com.duncpro.jackal.aws.DefaultAuroraServerlessRelationalDatabase;
 import com.duncpro.jaws.AWSLambdaRuntime;
+import com.duncpro.pets.local.LocalDeploymentModule;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import software.amazon.awssdk.services.rdsdata.RdsDataAsyncClient;

@@ -64,15 +64,18 @@ dependencies {
     testImplementation("org.mockito:mockito-core:3.+")
 }
 
+val dbInitScript = rootProject.projectDir.resolve("setup-database.sql");
+
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
+    environment["DB_INIT_SCRIPT"] = dbInitScript;
 }
 
 val serve by tasks.registering(JavaExec::class) {
     classpath = sourceSets.main.get().runtimeClasspath
     main = "com.duncpro.jaws.LocalJawsServer"
     standardInput = System.`in`
-    environment("DB_INIT_SCRIPT", rootProject.projectDir.resolve("setup-database.sql"));
+    environment["DB_INIT_SCRIPT"] = dbInitScript;
 }
 
 // AWS Lambda Build

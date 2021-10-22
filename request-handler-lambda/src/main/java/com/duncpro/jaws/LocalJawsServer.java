@@ -2,7 +2,7 @@ package com.duncpro.jaws;
 
 import com.duncpro.jroute.HttpMethod;
 import com.duncpro.jroute.Path;
-import com.duncpro.pets.LocalDeploymentModule;
+import com.duncpro.pets.local.LocalDeploymentModule;
 import com.duncpro.pets.MainModule;
 import com.duncpro.rex.*;
 import com.google.inject.Guice;

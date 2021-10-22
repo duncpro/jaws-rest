@@ -20,7 +20,7 @@ public class AWSLambdaRuntime {
     private final Queue<Runnable> shutdownHooks = new ConcurrentLinkedQueue<>();
     private final Supplier<Integer> remainingTime;
 
-    AWSLambdaRuntime(Supplier<Integer> remainingTime) {
+    public AWSLambdaRuntime(Supplier<Integer> remainingTime) {
         this.remainingTime = remainingTime;
     }
 
@@ -46,7 +46,7 @@ public class AWSLambdaRuntime {
      * Executes all registered shutdown hooks simultaneously. This function blocks until all registered shutdown
      * hooks have completed.
      */
-    void runShutdownHooks() {
+    public void runShutdownHooks() {
         final var executor = Executors.newCachedThreadPool();
 
         Stream.generate(shutdownHooks::poll)
