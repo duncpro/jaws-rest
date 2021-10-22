@@ -65,15 +65,15 @@ public class LocalDeploymentModule extends AbstractModule {
     public RelationalDatabase provideRelationalDatabase(AWSLambdaRuntime runtime,
                                                         @StatementExecutor ExecutorService statementExecutor) {
         final JdbcDataSource h2 = new JdbcDataSource();
-        h2.setURL("jdbc:h2:~/test;DB_CLOSE_ON_EXIT=FALSE;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE");
+        h2.setURL("jdbc:h2:./local-testing-db;DB_CLOSE_ON_EXIT=FALSE;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE");
 
         try (final var reader = Files.newBufferedReader(Path.of(System.getenv("DB_INIT_SCRIPT")))){
             RunScript.execute(h2.getConnection(), reader);
         } catch (SQLException e) {
-            logger.error("An unexpected SQL error occurred while initializing the local database." +
+            throw new RuntimeException("An unexpected SQL error occurred while initializing the local database." +
                     " Some application features might not work properly.", e);
         } catch (IOException e) {
-            logger.warn("Did not run database initialization SQL script because it could not be read from the" +
+            throw new RuntimeException("Did not run database initialization SQL script because it could not be read from the" +
                     " file system.", e);
         }
 
