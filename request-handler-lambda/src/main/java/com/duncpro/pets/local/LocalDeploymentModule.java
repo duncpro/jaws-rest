@@ -1,26 +1,15 @@
 package com.duncpro.pets.local;
 
-import com.duncpro.jackal.RelationalDatabase;
-import com.duncpro.jackal.RelationalDatabaseException;
-import com.duncpro.jackal.jdbc.DataSourceWrapper;
+import com.duncpro.jackal.SQLDatabase;
 import com.duncpro.jaws.AWSLambdaRuntime;
 import com.duncpro.jaws.ShutdownHookPriority;
 import com.duncpro.pets.MainModule;
 import com.google.inject.AbstractModule;
-import com.google.inject.BindingAnnotation;
 import com.google.inject.Provides;
-import org.h2.jdbcx.JdbcDataSource;
-import org.h2.tools.RunScript;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
-import java.io.IOException;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -35,7 +24,7 @@ public class LocalDeploymentModule extends AbstractModule {
 
     @Override
     public void configure() {
-        bind(RelationalDatabase.class).toProvider(LocalRelationalDatabaseProvider.class).asEagerSingleton();
+        bind(SQLDatabase.class).toProvider(LocalRelationalDatabaseProvider.class).asEagerSingleton();
     }
 
     /**

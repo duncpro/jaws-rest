@@ -1,6 +1,9 @@
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import java.nio.file.Files.*
+import com.duncpro.jackal.aws.DefaultAuroraServerlessDatabase
+import com.duncpro.jackal.aws.AuroraServerlessCredentials
+import com.duncpro.jackal.InterpolatableSQLStatement.sql
 
 buildscript {
     repositories {
@@ -15,7 +18,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.duncpro:jackal:1.0-SNAPSHOT-11")
+        classpath("com.duncpro:jackal:1.0-SNAPSHOT-12")
         classpath(platform("software.amazon.awssdk:bom:2.15.0"))
         classpath("software.amazon.awssdk:rdsdata")
         classpath("com.fasterxml.jackson.core:jackson-databind:2.12.4")
@@ -40,10 +43,10 @@ val initRemoteDatabase by tasks.registering {
         val dbArn = cfnOutputsContent["MainStack"]["MasterDbArn"].textValue()
         val dbSecretArn = cfnOutputsContent["MainStack"]["MasterDbSecretArn"].textValue()
         val dbInitFile = rootProject.projectDir.resolve("setup-database.sql").toPath();
-        val db = com.duncpro.jackal.aws.DefaultAuroraServerlessRelationalDatabase(dbArn, dbSecretArn)
+        val db = DefaultAuroraServerlessDatabase(AuroraServerlessCredentials(dbArn, dbSecretArn))
         for (statement in readAllLines(dbInitFile).joinToString("").split(";")) {
             if (statement.isBlank()) continue
-            db.prepareStatement(statement).executeUpdate()
+            sql(statement).executeUpdate(db);
         }
     }
 

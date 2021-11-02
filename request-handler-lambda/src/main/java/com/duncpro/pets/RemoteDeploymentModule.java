@@ -1,12 +1,11 @@
 package com.duncpro.pets;
 
-import com.duncpro.jackal.RelationalDatabase;
-import com.duncpro.jackal.aws.DefaultAuroraServerlessRelationalDatabase;
-import com.duncpro.jaws.AWSLambdaRuntime;
+import com.duncpro.jackal.SQLDatabase;
+import com.duncpro.jackal.aws.AuroraServerlessCredentials;
+import com.duncpro.jackal.aws.DefaultAuroraServerlessDatabase;
 import com.duncpro.pets.local.LocalDeploymentModule;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import software.amazon.awssdk.services.rdsdata.RdsDataAsyncClient;
 
 import javax.inject.Singleton;
 
@@ -18,18 +17,16 @@ import javax.inject.Singleton;
 public class RemoteDeploymentModule extends AbstractModule {
     @Override
     public void configure() {
-        bind(RelationalDatabase.class).to(DefaultAuroraServerlessRelationalDatabase.class);
+        bind(SQLDatabase.class).to(DefaultAuroraServerlessDatabase.class);
     }
 
     @Provides
     @Singleton
-    public DefaultAuroraServerlessRelationalDatabase provideRelationalDatabase(AWSLambdaRuntime runtime) {
+    public DefaultAuroraServerlessDatabase provideRelationalDatabase() {
         final String dbArn = System.getenv("MASTER_DB_ARN");
         final String secretArn = System.getenv("MASTER_DB_SECRET_ARN");
+        final var credentials = new AuroraServerlessCredentials(dbArn, secretArn);
 
-        final var rds = RdsDataAsyncClient.create();
-        runtime.addShutdownHook(rds::close);
-
-        return new DefaultAuroraServerlessRelationalDatabase(dbArn, secretArn);
+        return new DefaultAuroraServerlessDatabase(credentials);
     }
 }

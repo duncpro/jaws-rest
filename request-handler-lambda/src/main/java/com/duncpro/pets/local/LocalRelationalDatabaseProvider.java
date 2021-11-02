@@ -1,7 +1,6 @@
 package com.duncpro.pets.local;
 
-import com.duncpro.jackal.RelationalDatabase;
-import com.duncpro.jackal.RelationalDatabaseException;
+import com.duncpro.jackal.SQLDatabase;
 import com.duncpro.jackal.jdbc.DataSourceWrapper;
 import com.duncpro.jaws.AWSLambdaRuntime;
 import com.duncpro.jaws.ShutdownHookPriority;
@@ -18,10 +17,12 @@ import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 
+import static com.duncpro.jackal.InterpolatableSQLStatement.sql;
+
 /**
  * When running the application locally, a local in-memory database will be used instead of Amazon RDS.
  */
-public class LocalRelationalDatabaseProvider implements Provider<RelationalDatabase> {
+public class LocalRelationalDatabaseProvider implements Provider<SQLDatabase> {
     private final AWSLambdaRuntime runtime;
     private final ExecutorService statementExecutor;
 
@@ -34,7 +35,7 @@ public class LocalRelationalDatabaseProvider implements Provider<RelationalDatab
     }
 
     @Override
-    public RelationalDatabase get() {
+    public SQLDatabase get() {
         final JdbcDataSource h2 = new JdbcDataSource();
         h2.setURL("jdbc:h2:./local-testing-db;DB_CLOSE_ON_EXIT=FALSE;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE");
 
@@ -48,11 +49,11 @@ public class LocalRelationalDatabaseProvider implements Provider<RelationalDatab
                     " file system.", e);
         }
 
-        final var db = new DataSourceWrapper(h2, statementExecutor);
+        final var db = new DataSourceWrapper(statementExecutor, h2);
         runtime.addShutdownHook(() -> {
             try {
-                db.prepareStatement("SHUTDOWN").executeUpdate();
-            } catch (RelationalDatabaseException e) {
+                sql("SHUTDOWN;").executeUpdate(db);
+            } catch (com.duncpro.jackal.SQLException e) {
                 logger.error("Error occurred while shutting down the local H2 database.", e);
             }
         }, ShutdownHookPriority.EARLY);

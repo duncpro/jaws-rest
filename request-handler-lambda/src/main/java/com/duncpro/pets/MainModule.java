@@ -4,8 +4,6 @@ import com.duncpro.pets.directory.PetDirectoryModule;
 import com.duncpro.rex.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.AbstractModule;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MainModule extends AbstractModule {
     @Override

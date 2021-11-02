@@ -1,6 +1,6 @@
 package com.duncpro.pets.directory;
 
-import com.duncpro.jackal.RelationalDatabaseException;
+import com.duncpro.jackal.SQLException;
 import com.duncpro.jaws.RestApi;
 import com.duncpro.jroute.HttpMethod;
 import com.duncpro.pets.directory.dto.AddPetRequestBody;
@@ -29,7 +29,7 @@ public class PetDirectoryRestApi {
             final LookupOwnerResponseBody responseBody = new LookupOwnerResponseBody(
                     petDirectory.lookupOwner(petName).orElse(null));
             return new HttpResponse<>(HttpStatus.OK, responseBody);
-        } catch (RelationalDatabaseException e) {
+        } catch (SQLException e) {
             logger.error("An unexpected database error occurred.", e);
             return new HttpResponse<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -40,7 +40,7 @@ public class PetDirectoryRestApi {
         try {
             petDirectory.addPet(pet.petName, pet.owner);
             return new HttpResponse<>(HttpStatus.OK);
-        } catch (RelationalDatabaseException e) {
+        } catch (SQLException e) {
             logger.error("An unexpected database error occurred.", e);
             return new HttpResponse<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
