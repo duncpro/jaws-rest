@@ -24,26 +24,17 @@ public class PetDirectoryRestApi {
 
     @HttpResource(route = "/{petName}/owner")
     @HttpEndpoint(HttpMethod.GET)
-    public HttpResponse<LookupOwnerResponseBody> handleLookupOwnerRequest(@PathParam("petName") String petName) {
-        try {
-            final LookupOwnerResponseBody responseBody = new LookupOwnerResponseBody(
-                    petDirectory.lookupOwner(petName).orElse(null));
-            return new HttpResponse<>(HttpStatus.OK, responseBody);
-        } catch (SQLException e) {
-            logger.error("An unexpected database error occurred.", e);
-            return new HttpResponse<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public HttpResponse<LookupOwnerResponseBody> handleLookupOwnerRequest(@PathParam("petName") String petName) throws SQLException {
+        final LookupOwnerResponseBody responseBody = new LookupOwnerResponseBody(
+                petDirectory.lookupOwner(petName).orElse(null));
+        return new HttpResponse<>(HttpStatus.OK, responseBody);
+
     }
 
     @HttpEndpoint(HttpMethod.POST)
-    public HttpResponse<Void> handleAddPetRequest(@RequestBody AddPetRequestBody pet) {
-        try {
-            petDirectory.addPet(pet.petName, pet.owner);
-            return new HttpResponse<>(HttpStatus.OK);
-        } catch (SQLException e) {
-            logger.error("An unexpected database error occurred.", e);
-            return new HttpResponse<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public HttpResponse<Void> handleAddPetRequest(@RequestBody AddPetRequestBody pet) throws SQLException {
+        petDirectory.addPet(pet.petName, pet.owner);
+        return HttpResponse.bodiless(HttpStatus.OK);
     }
 
     private static final Logger logger = LoggerFactory.getLogger(PetDirectoryRestApi.class);
