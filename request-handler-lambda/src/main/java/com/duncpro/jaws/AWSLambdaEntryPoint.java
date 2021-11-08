@@ -11,6 +11,7 @@ import com.duncpro.pets.RemoteDeploymentModule;
 import com.duncpro.rex.*;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
+import com.google.inject.Stage;
 
 import java.util.Optional;
 
@@ -23,7 +24,7 @@ public class AWSLambdaEntryPoint extends LNTRequestHandler<APIGatewayProxyReques
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent apiGatewayRequest, Context context,
                                                       AWSLambdaRuntime runtime) {
-        return Guice.createInjector(new AWSLambdaIntegrationModule(runtime), new RexIntegrationModule(), new MainModule(),
+        return Guice.createInjector(Stage.PRODUCTION, new AWSLambdaIntegrationModule(runtime), new RexIntegrationModule(), new MainModule(),
                 new RemoteDeploymentModule())
                 .getInstance(RootRequestHandler.class)
                 .compose(this::convertRequest)
